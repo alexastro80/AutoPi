@@ -12,5 +12,5 @@ else
 	sudo echo "display_rotate=131072" | sudo tee -a sudo /boot/config.txt
 fi
 
-shutdown -r +0.2 "Flipping screen"
+reboot 
 

@@ -1,10 +1,18 @@
 #!/bin/sh
 #AddToStartup.sh
 #Add to Startup
-sudo cp ./Startup/autoPi.service /lib/systemd/system/autoPi.service
-
+DIR="$( dirname "$0" )"
+echo "$DIR"
+sudo rm -v /lib/systemd/system/autoPi.service
+sleep 1
+sudo systemctl daemon-reload
+sleep 1
+cd "$DIR"
+sudo cp -v ./Startup/autoPi.service /lib/systemd/system/autoPi.service
+sleep 1
+sudo chmod 644 /lib/systemd/system/autoPi.service
+sleep 1
 sudo systemctl daemon-reload
 sudo systemctl enable autoPi.service
-
-sudo shutdown -r +0.2 "REBOOT: Adding autoPi.service to startup. . ."
+sudo reboot
 

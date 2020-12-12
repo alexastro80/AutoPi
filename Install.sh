@@ -3,3 +3,4 @@
 #Add to Startup
 #
 
+sudo ./Startup/flip.sh
