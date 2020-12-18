@@ -1,4 +1,4 @@
 #!/bin/sh
 #More logic to select input method to come.
-
-sudo python3 joystick.py
+DIR="$( dirname "$0" )"
+sudo python3 $DIR/joystick.py

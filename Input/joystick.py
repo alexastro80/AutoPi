@@ -43,7 +43,7 @@ keys = ['b', 'b', 'v', 'n', 'h']
 # open application
 #os.system("sudo /home/pi/openauto/bin/autoapp &")
 # give time to open
-time.sleep(3.5)
+time.sleep(0.5)
 pyautogui.click(700, 250)
 #Setup
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)

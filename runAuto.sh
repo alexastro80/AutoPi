@@ -8,12 +8,12 @@ DIR="$( dirname "$0" )"
 cd "$DIR" || return ""
 # execute mouse python script
 # sudo ./startup/flip.sh
-echo "Enabling Input. . ."
-sudo ./Input/input.sh &
-echo "Starting Head Unit. . ."
 sudo /home/pi/openauto/bin/autoapp &
+echo "Enabling Input. . ."
+$DIR/Input/input.sh &
+echo "Starting Head Unit. . ."
 #echo "Starting OBD"
-#sudo ./OBD/obd.sh &
+#$DIR/OBD/obd.sh &
 
 
 
