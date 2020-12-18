@@ -41,7 +41,7 @@ counters = [0, 0, 0, 0, 0]
 keys = ['b', 'b', 'v', 'n', 'h']
 
 # open application
-os.system("sudo /home/pi/openauto/bin/autoapp &")
+#os.system("sudo /home/pi/openauto/bin/autoapp &")
 # give time to open
 time.sleep(3.5)
 pyautogui.click(700, 250)
