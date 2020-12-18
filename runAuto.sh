@@ -5,15 +5,17 @@ DIR="$( dirname "$0" )"
 
 #echo "$( dirname "$0" )"
 
-cd "$DIR" || return ""
+cd "$DIR" || return 1
 # execute mouse python script
 # sudo ./startup/flip.sh
-sudo /home/pi/openauto/bin/autoapp &
 echo "Enabling Input. . ."
-$DIR/Input/input.sh &
-echo "Starting Head Unit. . ."
+$DIR/Input/input.sh & 
 #echo "Starting OBD"
-#$DIR/OBD/obd.sh &
+#$DIR/OBD/obd.sh & 
+echo "Starting Head Unit. . ."
+sudo /home/pi/openauto/bin/autoapp ||return 1 
+return 0
+
 
 
 

@@ -6,10 +6,9 @@ Description=Start Auto application
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/pi/.Xauthority
 ExecStart=/bin/bash -c '/home/pi/AutoPi/runAuto.sh > /home/pi/autoPi.log 2>&1'
-Restart=always
+KillMode=mixed
+Restart=on-failure
 RestartSec=2s
-KillMode=process
-TimeoutSec=infinity
 
 [Install]
 WantedBy=graphical.target  
