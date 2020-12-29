@@ -20,11 +20,15 @@ while (connection.status() != OBDStatus.CAR_CONNECTED):
 print("Connected!")
 response = connection.query(obd.commands.RPM)
 if not response.is_null():
-    print(r.value)
-while (response.value.magnitude > 300):
+    print(response.value)
+count = 0
+while (count < 3): # 3 consecutive drops will indicate that the engine has been turned off.
     response = connection.query(obd.commands.RPM)
     if not response.is_null():
-        print(r.value)
+        count=0
+        print(response.value)
+    else:
+        count+=1
 print("Car turned off")
 # Shutdown Raspberry pi
-# os.system('sudo shutdown now')
+os.system('sudo shutdown now')
