@@ -1,11 +1,11 @@
 #!/bin/sh
-git submodule update --recursive 
+git submodule update --recursive --init
 pip install pyAutoGui
 #PYTHON_DIR=""
 # Copy python OBD
 #cp -r ./python-OBD/obd $PYTHON_DIR 
 
-cp -r ./openauto/cmake_modules ./
+cp -r -v ./openauto/cmake_modules ./
 
 mkdir build
 cd build || return 1

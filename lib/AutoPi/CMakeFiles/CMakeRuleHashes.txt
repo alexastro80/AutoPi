@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+3b07e11294152d35f41d2a9e931d4366 CMakeFiles/AutoPi_autogen

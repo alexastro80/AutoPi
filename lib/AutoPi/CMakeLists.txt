@@ -24,10 +24,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #    endif()
 #endif()
 
-#add_subdirectory(OpenAuto)
-#add_subdirectory(aasdk)
+#include(aasdk)
+#include(openauto)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
+find_package(QT NAMES Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
@@ -35,7 +35,7 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        openauto.hpp
+#        openauto.hpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

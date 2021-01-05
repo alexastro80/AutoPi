@@ -1,27 +1,29 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(AutoPiMaster CXX)
+project(AutoPi CXX)
 
 #aasdk
+message("AASDK. . .")
 add_subdirectory(aasdk)
 set(AASDK_INCLUDE_DIRS ${aasdk_SOURCE_DIR}/include)
 set(AASDK_LIBRARIES ${aasdk_SOURCE_DIR}/lib/libaasdk.so)
 set(AASDK_PROTO_INCLUDE_DIRS ${aasdk_BINARY_DIR})
 set(AASDK_PROTO_LIBRARIES ${aasdk_SOURCE_DIR}/lib/libaasdk_proto.so)
-message("Hi")
+
 # open Auto
+message("OPENAUTO. . .")
 add_subdirectory(openauto)
 set(OPENAUTO_INCLUDE_DIRS ${openauto_SOURCE_DIR}/include)
 
-# Auto Pi
-add_subdirectory(autopi)
-set(AUTOPI_INCLUDE_DIRS ${autopi_SOURCE_DIR}/include)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(base_directory ${CMAKE_CURRENT_SOURCE_DIR})
+set(source_directory ${base_directory}/src)
+set(include_directory ${base_directory}/include)
+#set(ui_directory ${base_directory}/lib/UI)
 #set(resources_directory ${base_directory}/assets)
-
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${base_directory}/cmake_modules)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${base_directory})
 set(EXECUTABLE_OUTPUT_PATH ${base_directory}/bin)
@@ -32,6 +34,9 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 
 add_definitions(-DBOOST_ALL_DYN_LINK)
 
+message("ADDING PACKAGES. . .")
+set(libusb-1.0_DIR ${base_directory}/cmake_modules)
+set(rtaudio_DIR ${libusb-1.0_DIR})
 find_package(Boost REQUIRED COMPONENTS system log OPTIONAL_COMPONENTS unit_test_framework)
 find_package(libusb-1.0 REQUIRED)
 find_package(Qt5 COMPONENTS Multimedia MultimediaWidgets Bluetooth)
@@ -66,4 +71,23 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
                    ${include_directory})
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY}) 
 
-file(GLOB_RECURSE source_files ${sources})
+file(GLOB_RECURSE source_files ${source_directory}/*.cpp ${include_directory}/*.hpp ${source_directory}/*.ui)
+
+add_executable(AutoPi ${source_files})
+
+add_dependencies(auto aasdk)
+target_link_libraries(AutoPi
+                      aasdk_proto
+                      aasdk
+                      auto
+                      ${Boost_LIBRARIES}
+                      ${Qt5Multimedia_LIBRARIES}
+                      ${Qt5MultimediaWidgets_LIBRARIES}
+                      ${Qt5Bluetooth_LIBRARIES}
+                      KF5::BluezQt
+                      ${LIBUSB_1_LIBRARIES}
+                      ${PROTOBUF_LIBRARIES}
+                      ${BCM_HOST_LIBRARIES}
+                      ${ILCLIENT_LIBRARIES}
+                      ${WINSOCK2_LIBRARIES}
+                      ${RTAUDIO_LIBRARIES})

@@ -1,0 +1,4 @@
+/home/pi/AutoPi/AutoPi/CMakeFiles/rebuild_cache.dir
+/home/pi/AutoPi/AutoPi/CMakeFiles/AutoPi.dir
+/home/pi/AutoPi/AutoPi/CMakeFiles/edit_cache.dir
+/home/pi/AutoPi/AutoPi/CMakeFiles/AutoPi_autogen.dir
