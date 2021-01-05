@@ -6,7 +6,7 @@ from obd import OBDStatus
 import time
 import os
 
-obd.logger.setLevel(obd.logging.DEBUG)
+#obd.logger.setLevel(obd.logging.DEBUG)
 
 #Try to get a connection
 print("Connecting. . .")
@@ -20,11 +20,13 @@ while (connection.status() != OBDStatus.CAR_CONNECTED):
 print("Connected!")
 response = connection.query(obd.commands.RPM)
 if not response.is_null():
-    print(r.value)
-while (response.value.magnitude > 300):
+    print(response.value)
+while (response.is_null() == False):
+    print(connection.status())
     response = connection.query(obd.commands.RPM)
     if not response.is_null():
-        print(r.value)
+        print(response.value)
+print(connection.status())
 print("Car turned off")
 # Shutdown Raspberry pi
 # os.system('sudo shutdown now')
