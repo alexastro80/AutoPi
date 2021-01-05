@@ -1,9 +1,3 @@
 [submodule "python-OBD"]
 	path = python-OBD
 	url = https://github.com/brendan-w/python-OBD.git
-[submodule "aasdk"]
-	path = aasdk
-	url = https://github.com/rsjudka/aasdk.git
-[submodule "openauto"]
-	path = openauto
-	url = https://github.com/f1xpl/openauto.git
