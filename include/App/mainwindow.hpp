@@ -2,7 +2,7 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
-#include <Views/openautotab.hpp>
+#include "../Views/openAutoView.hpp"
 
 namespace Ui {
 class MainWindow;

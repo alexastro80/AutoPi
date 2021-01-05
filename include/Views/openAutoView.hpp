@@ -23,7 +23,7 @@ public:
     ~OpenAutoWorker();
 
     inline void start() { this->app->waitForUSBDevice(); }
-    inline void set_Opacity(unsigned int alpha) { this->service_factory.setOpacity(alpha); }
+    inline void set_Opacity(unsigned int alpha) { this->serviceFactory.setOpacity(alpha); }
 
 private:
     void create_usb_workers();
@@ -50,12 +50,12 @@ class OpenAutoView :public QWidget {
 
 public:
     OpenAutoView(QWidget *parent = nullptr);
-    ~OpenAutoView();
+  //  ~OpenAutoView();
 
     void startWorker();
 
 private:
-    QWidget* msgWidget)();
+    QWidget* msgWidget();
 
     OpenAutoWorker *worker = nullptr;
 };

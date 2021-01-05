@@ -29,9 +29,9 @@ MainWindow::~MainWindow()
 QTabWidget *MainWindow::tabs_widget()
 {
     QTabWidget *widget = new QTabWidget(this);
-    widget->setTabPositiion(QTabWidget::TabPosition::West);
+    widget->setTabPosition(QTabWidget::TabPosition::West);
     //widget->tabBar()->setIconSize(Theme::icon_48);
-    widget->tabBar()->setIconSize(20);
+    //widget->tabBar()->setIconSize(20);
 
     widget->addTab(this->openAutoView, QString());
     //this->theme->add_tab_icon("directions_car", 0, Qt::Orientation::Vertical);
@@ -55,7 +55,7 @@ QTabWidget *MainWindow::tabs_widget()
     return widget;
 }
 
-QWidget * MainWindow::controls_widget()
+/*QWidget * MainWindow::control_widget()
 {
     QWidget *widget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -64,6 +64,7 @@ QWidget * MainWindow::controls_widget()
 
     return widget;
 }
+* */
 /*
 QWidget *MainWindow::volume_widget()
 {
@@ -76,7 +77,7 @@ void MainWindow::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    this->openAutoView->start_worker();
+    this->openAutoView->startWorker();
     this->openAutoView->setFocus();
 }
 

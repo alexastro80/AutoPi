@@ -1,5 +1,6 @@
 //#include "../../include/Views/openautotab.hpp"
-#include "Views/openAutoView.hpp"
+#include <Views/openAutoView.hpp>
+#include <App/mainwindow.hpp>
 //#include "Views/openautotab.hpp"
 
 OpenAutoWorker::OpenAutoWorker(std::function<void(bool)> callback, QWidget *parent)
@@ -11,7 +12,7 @@ OpenAutoWorker::OpenAutoWorker(std::function<void(bool)> callback, QWidget *pare
       queryFactory(usbWrapper,io_service),
       queryChainFactory(usbWrapper, io_service, queryFactory),
       serviceFactory(io_service, configuration, parent, callback),
-      androidAutoEntityFactory(io_service, configuration, parent, callback),
+      androidAutoEntityFactory(io_service, configuration, serviceFactory),
       usbHub(std::make_shared<f1x::aasdk::usb::USBHub>(this->usbWrapper, this->io_service, this->queryChainFactory)),
       connectedAccessoriesEnum(std::make_shared<f1x::aasdk::usb::ConnectedAccessoriesEnumerator>(
         this->usbWrapper, this->io_service, this->queryChainFactory)),
@@ -59,7 +60,7 @@ OpenAutoView::OpenAutoView(QWidget *parent) : QWidget(parent)
   MainWindow  *window = qobject_cast<MainWindow *>(parent);
 
   connect(window, &MainWindow::set_open_auto_state, [this](unsigned int alpha) {
-    if(this->worker != nullptr) this->worker->set_opacity(alpha);
+    if(this->worker != nullptr) this->worker->set_Opacity(alpha);
     if(alpha > 0) this->setFocus();
   });
 
@@ -73,7 +74,7 @@ OpenAutoView::OpenAutoView(QWidget *parent) : QWidget(parent)
   #endif
 }
 
-void OpenAutoView::start_worker()
+void OpenAutoView::startWorker()
 {
   QStackedLayout *layout = qobject_cast<QStackedLayout *>(this->layout());
   auto callback = [layout](bool is_active) { layout->setCurrentIndex(is_active ? 1 : 0); };
@@ -83,7 +84,7 @@ void OpenAutoView::start_worker()
   this->worker->start();
 }
 
-QWidget *OpenAutoView::msg_widget()
+QWidget *OpenAutoView::msgWidget()
 {
   QWidget *widget = new QWidget(this);
   QVBoxLayout *layout = new QVBoxLayout(widget);
