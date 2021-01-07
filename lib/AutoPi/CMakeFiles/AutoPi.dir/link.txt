@@ -1,1 +1,0 @@
-/usr/bin/g++  -O3 -DNDEBUG   CMakeFiles/AutoPi.dir/main.cpp.o CMakeFiles/AutoPi.dir/mainwindow.cpp.o CMakeFiles/AutoPi.dir/AutoPi_autogen/mocs_compilation.cpp.o  -o AutoPi /usr/lib/arm-linux-gnueabihf/libQt5Widgets.so.5.11.3 /usr/lib/arm-linux-gnueabihf/libQt5Gui.so.5.11.3 /usr/lib/arm-linux-gnueabihf/libQt5Core.so.5.11.3 

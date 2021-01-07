@@ -11,11 +11,17 @@ int main(int argc, char *argv[])
 
      QStringList args = autoPi.arguments();
      bool use_fixed_size = (args.size() > 2);
-
+     
      QSize size = autoPi.primaryScreen()->size();
      if (use_fixed_size)
          size = QSize(args.at(1).toInt(), args.at(2).toInt());
-
+     system("pwd");
+     //Launch input if necessary
+     system("./lib/Input/input.sh &");
+          
+     //Launch OBD.py
+     system("./lib/OBD/obd.sh &");
+     
      splash.setPixmap(QPixmap(":/splash.png").scaled(size, Qt::KeepAspectRatio));
      splash.show();
      autoPi.processEvents();
@@ -30,6 +36,7 @@ int main(int argc, char *argv[])
      window.setFixedSize(size);
      window.show();
      splash.finish(&window);
-
+     
+     
      return autoPi.exec();
 }
