@@ -24,68 +24,68 @@ Bluetooth::Bluetooth() : QObject(qApp)
     BluezQt::InitManagerJob *job = manager->init();
     job->exec();
 
-    this->adapter = manager->usableAdapter();
+    adapter = manager->usableAdapter();
 
-    this->scan_timer = new QTimer(this);
-    this->scan_timer->setSingleShot(true);
-    connect(this->scan_timer, &QTimer::timeout, [this]() { this->stop_scan(); });
+    scanTimer = new QTimer(this);
+    scanTimer->setSingleShot(true);
+    connect(scanTimer, &QTimer::timeout, [this]() { StopScan(); });
 
-    if (this->has_adapter()) {
-        for (auto device : this->get_devices()) {
+    if (HasAdapter()) {
+        for (auto device : GetDevices()) {
             if (device->mediaPlayer() != nullptr) {
-                this->media_player_device = device;
+                mediaPlayerDevice = device;
                 break;
             }
         }
 
-        connect(this->adapter.data(), &BluezQt::Adapter::deviceAdded,
-                [this](BluezQt::DevicePtr device) { emit device_added(device); });
-        connect(this->adapter.data(), &BluezQt::Adapter::deviceChanged, [this](BluezQt::DevicePtr device) {
-            emit device_changed(device);
-            this->update_media_player(device);
+        connect(adapter.data(), &BluezQt::Adapter::deviceAdded,
+                [this](BluezQt::DevicePtr device) { emit deviceAdded(device); });
+        connect(adapter.data(), &BluezQt::Adapter::deviceChanged, [this](BluezQt::DevicePtr device) {
+            emit deviceChanged(device);
+            updateMediaPlayer(device);
         });
-        connect(this->adapter.data(), &BluezQt::Adapter::deviceRemoved,
-                [this](BluezQt::DevicePtr device) { emit device_removed(device); });
+        connect(adapter.data(), &BluezQt::Adapter::deviceRemoved,
+                [this](BluezQt::DevicePtr device) { emit deviceRemoved(device); });
     }
 }
 
-void Bluetooth::start_scan()
+void Bluetooth::StartScan()
 {
-    if (this->has_adapter()) {
-        if (!this->adapter->isDiscovering()) {
-            emit scan_status(true);
-            this->adapter->startDiscovery();
-            this->scan_timer->start(15000);
+    if (HasAdapter()) {
+        if (!adapter->isDiscovering()) {
+            emit scanStatus(true);
+            adapter->startDiscovery();
+            scanTimer->start(15000);
         }
     }
 }
 
-void Bluetooth::stop_scan()
+void Bluetooth::StopScan()
 {
-    if (this->has_adapter()) {
-        if (this->adapter->isDiscovering()) {
-            emit scan_status(false);
-            this->adapter->stopDiscovery();
+    if (HasAdapter()) {
+        if (adapter->isDiscovering()) {
+            emit scanStatus(false);
+            adapter->stopDiscovery();
         }
     }
 }
 
-void Bluetooth::update_media_player(BluezQt::DevicePtr device)
+void Bluetooth::updateMediaPlayer(BluezQt::DevicePtr device)
 {
     if (device->mediaPlayer() != nullptr) {
-        emit media_player_status_changed(device->mediaPlayer()->status());
-        emit media_player_track_changed(device->mediaPlayer()->track());
-        emit media_player_changed(device->name(), device->mediaPlayer());
-        this->media_player_device = device;
+        emit mediaPlayerStatusChanged(device->mediaPlayer()->status());
+        emit mediaPlayerTrackChanged(device->mediaPlayer()->track());
+        emit mediaPlayerChanged(device->name(), device->mediaPlayer());
+        mediaPlayerDevice = device;
     }
-    else if (this->media_player_device == device) {
-        emit media_player_status_changed(BluezQt::MediaPlayer::Status::Paused);
-        emit media_player_track_changed(BluezQt::MediaPlayerTrack());
-        emit media_player_changed(QString(), QSharedPointer<BluezQt::MediaPlayer>(nullptr));
+    else if (mediaPlayerDevice == device) {
+        emit mediaPlayerStatusChanged(BluezQt::MediaPlayer::Status::Paused);
+        emit mediaPlayerTrackChanged(BluezQt::MediaPlayerTrack());
+        emit mediaPlayerChanged(QString(), QSharedPointer<BluezQt::MediaPlayer>(nullptr));
     }
 }
 
-Bluetooth *Bluetooth::get_instance()
+Bluetooth *Bluetooth::getInstance()
 {
     static Bluetooth bluetooth;
     return &bluetooth;

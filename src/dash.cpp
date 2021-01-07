@@ -6,21 +6,21 @@
 
 int main(int argc, char *argv[])
 {
-     QApplication dash(argc, argv);
+     QApplication autoPi(argc, argv);
      QSplashScreen splash;
 
-     QStringList args = dash.arguments();
+     QStringList args = autoPi.arguments();
      bool use_fixed_size = (args.size() > 2);
 
-     QSize size = dash.primaryScreen()->size();
+     QSize size = autoPi.primaryScreen()->size();
      if (use_fixed_size)
          size = QSize(args.at(1).toInt(), args.at(2).toInt());
 
      splash.setPixmap(QPixmap(":/splash.png").scaled(size, Qt::KeepAspectRatio));
      splash.show();
-     dash.processEvents();
+     autoPi.processEvents();
 
-     DashWindow window;
+     MainWindow window;
      window.setWindowIcon(QIcon(":/logo.png"));
      window.setWindowFlags(Qt::FramelessWindowHint);
      if (!use_fixed_size)
@@ -31,5 +31,5 @@ int main(int argc, char *argv[])
      window.show();
      splash.finish(&window);
 
-     return dash.exec();
+     return autoPi.exec();
 }

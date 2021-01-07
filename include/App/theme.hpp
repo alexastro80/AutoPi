@@ -46,25 +46,23 @@ class Theme : public QObject {
     static const QColor success_color;
 
     Theme();
+    bool Mode;
 
-    inline bool get_mode() { return this->mode; }
-    inline void set_mode(bool mode) { this->mode = mode; }
+    void Scale(double scale);
 
-    void set_scale(double scale);
+    QIcon MakeButtonIcon(QString name, QPushButton *button, QString alt_name = QString());
+    void Update();
 
-    QIcon make_button_icon(QString name, QPushButton *button, QString alt_name = QString());
-    void update();
-
-    inline static QFrame *br(QWidget *parent = nullptr, bool vertical = false)
+    inline static QFrame *Br(QWidget *parent = nullptr, bool vertical = false)
     {
-        QFrame *br = new QFrame(parent);
-        br->setLineWidth(2);
-        br->setFrameShape(vertical ? QFrame::VLine : QFrame::HLine);
-        br->setFrameShadow(QFrame::Plain);
+        QFrame *b = new QFrame(parent);
+        b->setLineWidth(2);
+        b->setFrameShape(vertical ? QFrame::VLine : QFrame::HLine);
+        b->setFrameShadow(QFrame::Plain);
 
-        return br;
+        return b;
     }
-    inline static void to_touch_scroller(QAbstractScrollArea *area)
+    inline static void ToTouchScroller(QAbstractScrollArea *area)
     {
         QVariant policy =
             QVariant::fromValue<QScrollerProperties::OvershootPolicy>(QScrollerProperties::OvershootAlwaysOff);
@@ -76,7 +74,7 @@ class Theme : public QObject {
         QScroller::grabGesture(area->viewport(), QScroller::LeftMouseButtonGesture);
         QScroller::scroller(area->viewport())->setScrollerProperties(properties);
     }
-    static Theme *get_instance();
+    static Theme *getInstance();
 
    private:
     QPalette palette;
@@ -84,13 +82,13 @@ class Theme : public QObject {
     bool mode = false;
     double scale = 1.0;
 
-    void set_palette();
-    QString parse_stylesheet(QString file);
-    QString scale_stylesheet(QString stylesheet);
-    QIcon themed_button_icon(QIcon icon, QAbstractButton *button);
+    void setPalette();
+    QString parseStylesheet(QString file);
+    QString scaleStylesheet(QString stylesheet);
+    QIcon themedButtonIcon(QIcon icon, QAbstractButton *button);
 
-    inline QColor get_base_color() { return this->mode ? QColor(255, 255, 255) : QColor(0, 0, 0); }
+    inline QColor getBaseColor() { return mode ? QColor(255, 255, 255) : QColor(0, 0, 0); }
 
    signals:
-    void mode_updated(bool mode);
+    void modeUpdated(bool mode);
 };

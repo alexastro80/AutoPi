@@ -28,30 +28,30 @@ class OpenAutoWorker : public QObject {
     OpenAutoWorker(std::function<void(bool)> callback, bool night_mode, QWidget *frame);
     ~OpenAutoWorker();
 
-    inline void start() { this->app->waitForDevice(true); }
-    inline void set_opacity(unsigned int alpha) { this->service_factory.setOpacity(alpha); }
-    inline void update_size() { this->service_factory.resize(); }
-    inline void set_night_mode(bool mode) { this->service_factory.setNightMode(mode); }
-    inline void send_key_event(QKeyEvent *event) { this->service_factory.sendKeyEvent(event); }
+    inline void start() { app->waitForDevice(true); }
+    inline void SetOpacity(unsigned int alpha) { serviceFactory.setOpacity(alpha); }
+    inline void UpdateSize() { serviceFactory.resize(); }
+    inline void SetNightMode(bool mode) { serviceFactory.setNightMode(mode); }
+    inline void SendKeyEvent(QKeyEvent *event) { serviceFactory.sendKeyEvent(event); }
 
    private:
-    void create_usb_workers();
-    void create_io_service_workers();
+    void createUsbWorkers();
+    void createIOServiceWorkers();
 
     libusb_context *usb_context;
     boost::asio::io_service io_service;
     boost::asio::io_service::work work;
     std::shared_ptr<openauto::configuration::Configuration> configuration;
-    aasdk::tcp::TCPWrapper tcp_wrapper;
-    aasdk::usb::USBWrapper usb_wrapper;
-    aasdk::usb::AccessoryModeQueryFactory query_factory;
-    aasdk::usb::AccessoryModeQueryChainFactory query_chain_factory;
-    openauto::service::ServiceFactory service_factory;
-    openauto::service::AndroidAutoEntityFactory android_auto_entity_factory;
-    std::shared_ptr<aasdk::usb::USBHub> usb_hub;
-    std::shared_ptr<aasdk::usb::ConnectedAccessoriesEnumerator> connected_accessories_enumerator;
+    aasdk::tcp::TCPWrapper tcpWrapper;
+    aasdk::usb::USBWrapper usbWrapper;
+    aasdk::usb::AccessoryModeQueryFactory queryFactory;
+    aasdk::usb::AccessoryModeQueryChainFactory queryChainFactory;
+    openauto::service::ServiceFactory serviceFactory;
+    openauto::service::AndroidAutoEntityFactory androidAutoEntityFactory;
+    std::shared_ptr<aasdk::usb::USBHub> USBHub;
+    std::shared_ptr<aasdk::usb::ConnectedAccessoriesEnumerator> connectedAccessoriesEnum;
     std::shared_ptr<openauto::App> app;
-    std::vector<std::thread> thread_pool;
+    std::vector<std::thread> threadPool;
 };
 
 class OpenAutoFrame : public QWidget {
@@ -60,28 +60,28 @@ class OpenAutoFrame : public QWidget {
    public:
     OpenAutoFrame(QWidget *parent) : QWidget(parent) {}
 
-    inline bool is_fullscreen() { return this->fullscreen; }
-    inline void toggle_fullscreen() { this->fullscreen = !this->fullscreen; }
+    inline bool IsFullscreen() { return fullscreen; }
+    inline void ToggleFullscreen() { fullscreen = !fullscreen; }
 
    protected:
     void mouseDoubleClickEvent(QMouseEvent *);
-    inline void enterEvent(QEvent *) { this->setFocus(); }
+    inline void enterEvent(QEvent *) { setFocus(); }
 
    private:
     bool fullscreen = false;
 
    signals:
-    void double_clicked(bool fullscreen);
+    void doubleClicked(bool fullscreen);
     void toggle(bool enable);
 };
 
-class OpenAutoPage : public QStackedWidget {
+class OpenAutoView : public QStackedWidget {
     Q_OBJECT
 
    public:
-    OpenAutoPage(QWidget *parent = nullptr);
+    OpenAutoView(QWidget *parent = nullptr);
 
-    inline void pass_key_event(QKeyEvent *event) { this->worker->send_key_event(event); }
+    inline void PassKeyEvent(QKeyEvent *event) { worker->SendKeyEvent(event); }
 
    protected:
     void resizeEvent(QResizeEvent *event);
@@ -92,25 +92,25 @@ class OpenAutoPage : public QStackedWidget {
         Settings(QWidget *parent = nullptr);
 
        private:
-        QWidget *settings_widget();
-        QBoxLayout *rhd_row_widget();
-        QBoxLayout *frame_rate_row_widget();
-        QBoxLayout *resolution_row_widget();
-        QBoxLayout *dpi_row_widget();
-        QBoxLayout *dpi_widget();
-        QBoxLayout *rt_audio_row_widget();
-        QBoxLayout *audio_channels_row_widget();
-        QBoxLayout *bluetooth_row_widget();
-        QBoxLayout *touchscreen_row_widget();
-        QCheckBox *button_checkbox(QString name, QString key, aasdk::proto::enums::ButtonCode::Enum code);
-        QBoxLayout *buttons_row_widget();
+        QWidget *settingsWidget();
+        QBoxLayout *rhdRowWidget();
+        QBoxLayout *frameRateRowWidget();
+        QBoxLayout *resolutionRowWidget();
+        QBoxLayout *dpiRowWidget();
+        QBoxLayout *dpiWidget();
+        QBoxLayout *rtAudioRowwidget();
+        QBoxLayout *audioChannelsRowWidget();
+        QBoxLayout *bluetoothRowWidget();
+        QBoxLayout *touchscreenRowWidget();
+        QCheckBox *buttonCheckbox(QString name, QString key, aasdk::proto::enums::ButtonCode::Enum code);
+        QBoxLayout *buttonsRowWidget();
 
         Bluetooth *bluetooth;
         Config *config;
         Theme *theme;
     };
 
-    QWidget *connect_msg();
+    QWidget *connectMsg();
 
     Config *config;
     Theme *theme;
@@ -118,5 +118,5 @@ class OpenAutoPage : public QStackedWidget {
     OpenAutoWorker *worker;
 
    signals:
-    void toggle_fullscreen(QWidget *widget);
+    void toggleFullscreen(QWidget *widget);
 };

@@ -20,38 +20,38 @@ class Bluetooth : public QObject {
    public:
     Bluetooth();
 
-    void start_scan();
-    void stop_scan();
+    void StartScan();
+    void StopScan();
 
-    inline QList<BluezQt::DevicePtr> get_devices()
+    inline QList<BluezQt::DevicePtr> GetDevices()
     {
-        return this->has_adapter() ? this->adapter->devices() : QList<BluezQt::DevicePtr>();
+        return HasAdapter() ? adapter->devices() : QList<BluezQt::DevicePtr>();
     }
-    inline QPair<QString, BluezQt::MediaPlayerPtr> get_media_player()
+    inline QPair<QString, BluezQt::MediaPlayerPtr> GetMediaPlayer()
     {
-        if (this->media_player_device != nullptr)
-            return {this->media_player_device->name(), this->media_player_device->mediaPlayer()};
+        if (mediaPlayerDevice != nullptr)
+            return {mediaPlayerDevice->name(), mediaPlayerDevice->mediaPlayer()};
 
         return {QString(), QSharedPointer<BluezQt::MediaPlayer>(nullptr)};
     }
-    inline bool has_adapter() { return this->adapter != nullptr; }
+    inline bool HasAdapter() { return adapter != nullptr; }
 
-    static Bluetooth *get_instance();
+    static Bluetooth *getInstance();
 
    private:
-    void update_media_player(BluezQt::DevicePtr device);
+    void updateMediaPlayer(BluezQt::DevicePtr device);
 
     BluezQt::AdapterPtr adapter;
-    BluezQt::DevicePtr media_player_device;
-    QTimer *scan_timer;
+    BluezQt::DevicePtr mediaPlayerDevice;
+    QTimer *scanTimer;
 
    signals:
-    void device_added(BluezQt::DevicePtr);
-    void device_changed(BluezQt::DevicePtr);
-    void device_removed(BluezQt::DevicePtr);
-    void media_player_changed(QString, BluezQt::MediaPlayerPtr);
-    void media_player_status_changed(BluezQt::MediaPlayer::Status);
-    void media_player_track_changed(BluezQt::MediaPlayerTrack);
-    void scan_status(bool);
+    void deviceAdded(BluezQt::DevicePtr);
+    void deviceChanged(BluezQt::DevicePtr);
+    void deviceRemoved(BluezQt::DevicePtr);
+    void mediaPlayerChanged(QString, BluezQt::MediaPlayerPtr);
+    void mediaPlayerStatusChanged(BluezQt::MediaPlayer::Status);
+    void mediaPlayerTrackChanged(BluezQt::MediaPlayerTrack);
+    void scanStatus(bool);
 };
 

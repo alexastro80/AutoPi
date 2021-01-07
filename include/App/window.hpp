@@ -15,14 +15,14 @@
 #include "Views/openauto.hpp"
 #include "App/theme.hpp"
 
-class DashWindow : public QMainWindow {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
-    DashWindow();
-    void add_widget(QWidget *widget);
+    MainWindow();
+    void AddWidget(QWidget *widget);
 
-    inline QList<QAbstractButton *> get_pages() { return this->rail_group->buttons(); }
+    inline QList<QAbstractButton *> Pages() { return railGroup->buttons(); }
 
    protected:
     void showEvent(QShowEvent *event);
@@ -34,25 +34,25 @@ class DashWindow : public QMainWindow {
     Theme *theme;
     Shortcuts *shortcuts;
 
-    OpenAutoPage *openauto;
+    OpenAutoView *openauto;
     QStackedWidget *stack;
     QVBoxLayout *rail;
-    QButtonGroup *rail_group;
+    QButtonGroup *railGroup;
     QStackedLayout *pages;
     QHBoxLayout *bar;
 
-    void init_config();
-    void init_theme();
-    void init_ui();
-    void init_shortcuts();
+    void initConfig();
+    void initTheme();
+    void initUI();
+    void initShortcuts();
     QLayout *body();
-    void add_pages();
-    void add_page(QString name, QWidget *page, QString icon);
+    void addPages();
+    void addPage(QString name, QWidget *page, QString icon);
 
-    QWidget *controls_bar();
-    QLayout *quick_views();
-    QWidget *brightness_widget(bool skip_buttons = false);
-    QWidget *controls_widget();
-    QWidget *power_control();
-    QWidget *save_control();
+    QWidget *controlsBar();
+    QLayout *quickViews();
+    QWidget *brightnessWidget(bool skip_buttons = false);
+    QWidget *controlsWidget();
+    QWidget *powerControl();
+    QWidget *saveControl();
 };

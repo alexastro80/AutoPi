@@ -7,169 +7,151 @@
 #include <cstdlib>
 #include <sstream>
 
-//#include "App/widgets/sliders.hpp"
-//#include "App/pages/camera.hpp"
-//#include "App/pages/vehicle.hpp"
-//#include "App/pages/launcher.hpp"
-//#include "App/pages/media.hpp"
-//#include "App/pages/settings.hpp"
-//#include "App/widgets/dialog.hpp"
-
-DashWindow::DashWindow()
+MainWindow::MainWindow()
 {
-    this->setAttribute(Qt::WA_TranslucentBackground, true);
+    setAttribute(Qt::WA_TranslucentBackground, true);
 
-    this->config = Config::get_instance();
-    this->theme = Theme::get_instance();
-    this->shortcuts = Shortcuts::get_instance();
+    config = Config::getInstance();
+    theme = Theme::getInstance();
+    shortcuts = Shortcuts::getInstance();
 
-    this->init_theme();
-    this->init_config();
+    initTheme();
+    initConfig();
 
-    this->openauto = new OpenAutoPage(this);
-    this->stack = new QStackedWidget(this);
-    this->rail = new QVBoxLayout();
-    this->rail_group = new QButtonGroup(this);
-    this->pages = new QStackedLayout();
-    this->bar = new QHBoxLayout();
+    openauto = new OpenAutoView(this);
+    stack = new QStackedWidget(this);
+    rail = new QVBoxLayout();
+    railGroup = new QButtonGroup(this);
+    pages = new QStackedLayout();
+    bar = new QHBoxLayout();
 
-    connect(this->rail_group, QOverload<int, bool>::of(&QButtonGroup::buttonToggled),
-            [this](int id, bool) { this->pages->setCurrentIndex(id); });
-    connect(this->openauto, &OpenAutoPage::toggle_fullscreen, [this](QWidget *widget) { this->add_widget(widget); });
+    connect(railGroup, QOverload<int, bool>::of(&QButtonGroup::buttonToggled),
+            [this](int id, bool) { pages->setCurrentIndex(id); });
+    connect(openauto, &OpenAutoView::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
 
-    connect(this->config, &Config::scale_changed, [theme = this->theme](double scale) { theme->set_scale(scale); });
-    connect(this->config, &Config::page_changed,
-            [rail_group = this->rail_group, pages = this->pages](QWidget *page, bool enabled) {
-                QAbstractButton *button = rail_group->button(pages->indexOf(page));
+    connect(config, &Config::scaleChanged, [theme = theme](double scale) { theme->Scale(scale); });
+    connect(config, &Config::pageChanged,
+            [railGroup = railGroup, pages = pages](QWidget *page, bool enabled) {
+                QAbstractButton *button = railGroup->button(pages->indexOf(page));
                 button->setVisible(enabled);
             });
 
-    this->init_ui();
-    this->init_shortcuts();
+    initUI();
+    initShortcuts();
 }
 
-void DashWindow::add_widget(QWidget *widget)
+void MainWindow::AddWidget(QWidget *widget)
 {
-    this->stack->addWidget(widget);
-    this->stack->setCurrentWidget(widget);
+    stack->addWidget(widget);
+    stack->setCurrentWidget(widget);
 }
 
-void DashWindow::showEvent(QShowEvent *event)
+void MainWindow::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    this->theme->update();
-    this->shortcuts->initialize_shortcuts();
+    theme->Update();
+    shortcuts->InitShortcuts();
 }
 
-void DashWindow::keyPressEvent(QKeyEvent *event)
+void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     QMainWindow::keyPressEvent(event);
-    this->openauto->pass_key_event(event);
+    openauto->PassKeyEvent(event);
 }
 
-void DashWindow::keyReleaseEvent(QKeyEvent *event)
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
     QMainWindow::keyReleaseEvent(event);
-    this->openauto->pass_key_event(event);
+    openauto->PassKeyEvent(event);
 }
 
-void DashWindow::init_config()
+void MainWindow::initConfig()
 {
-    qApp->setOverrideCursor(this->config->get_mouse_active() ? Qt::ArrowCursor : Qt::BlankCursor);
-/*
-    this->config->add_quick_view("volume", volume_slider(false, this));
-    this->config->add_quick_view("brightness", brightness_slider(true, this));
-    this->config->add_quick_view("controls", this->controls_widget());
-    */this->config->add_quick_view("none", new QFrame(this));
+    qApp->setOverrideCursor(config->MouseActive ? Qt::ArrowCursor : Qt::BlankCursor);
+    config->AddQuickView("none", new QFrame(this));
 }
 
-void DashWindow::init_theme()
+void MainWindow::initTheme()
 {
-    this->theme->set_mode(this->config->get_dark_mode());
-    this->theme->set_scale(this->config->get_scale());
+    theme->Mode = config->DarkMode;
+    theme->Scale(config->Scale);
 }
 
-void DashWindow::init_ui()
+void MainWindow::initUI()
 {
     QWidget *widget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    this->rail->setContentsMargins(0, 0, 0, 0);
-    this->rail->setSpacing(0);
+    rail->setContentsMargins(0, 0, 0, 0);
+    rail->setSpacing(0);
 
-    layout->addLayout(this->rail);
-    layout->addLayout(this->body());
+    layout->addLayout(rail);
+    layout->addLayout(body());
 
-    this->add_pages();
+    addPages();
 
-    this->stack->addWidget(widget);
-    this->setCentralWidget(this->stack);
+    stack->addWidget(widget);
+    setCentralWidget(stack);
 }
 
-void DashWindow::init_shortcuts()
+void MainWindow::initShortcuts()
 {
-    Shortcut *brightness_down = new Shortcut(this->config->get_shortcut("brightness_down"), this);
-    this->shortcuts->add_shortcut("brightness_down", "Decrease Brightness", brightness_down);
-    connect(brightness_down, &Shortcut::activated, [config = this->config]() { config->set_brightness(config->get_brightness() - 4); });
-    Shortcut *brightness_up = new Shortcut(this->config->get_shortcut("brightness_up"), this);
-    this->shortcuts->add_shortcut("brightness_up", "Increase Brightness", brightness_up);
-    connect(brightness_up, &Shortcut::activated, [config = this->config]() { config->set_brightness(config->get_brightness() + 4); });
+    Shortcut *brightness_down = new Shortcut(config->GetShortcut("brightness_down"), this);
+    shortcuts->AddShortcut("brightness_down", "Decrease Brightness", brightness_down);
+    connect(brightness_down, &Shortcut::activated, [config = config]() { config->Brightness(config->Brightness() - 4); });
+    Shortcut *brightness_up = new Shortcut(config->GetShortcut("brightness_up"), this);
+    shortcuts->AddShortcut("brightness_up", "Increase Brightness", brightness_up);
+    connect(brightness_up, &Shortcut::activated, [config = config]() { config->Brightness(config->Brightness() + 4); });
 
-    Shortcut *volume_down = new Shortcut(this->config->get_shortcut("volume_down"), this);
-    this->shortcuts->add_shortcut("volume_down", "Decrease Volume", volume_down);
-    connect(volume_down, &Shortcut::activated, [config = this->config]() { config->set_volume(config->get_volume() - 2); });
-    Shortcut *volume_up = new Shortcut(this->config->get_shortcut("volume_up"), this);
-    this->shortcuts->add_shortcut("volume_up", "Increase Volume", volume_up);
-    connect(volume_up, &Shortcut::activated, [config = this->config]() { config->set_volume(config->get_volume() + 2); });
+    Shortcut *volume_down = new Shortcut(config->GetShortcut("volume_down"), this);
+    shortcuts->AddShortcut("volume_down", "Decrease Volume", volume_down);
+    connect(volume_down, &Shortcut::activated, [config = config]() { config->Volume(config->Volume() - 2); });
+    Shortcut *volume_up = new Shortcut(config->GetShortcut("volume_up"), this);
+    shortcuts->AddShortcut("volume_up", "Increase Volume", volume_up);
+    connect(volume_up, &Shortcut::activated, [config = config]() { config->Volume(config->Volume() + 2); });
 }
 
-QLayout *DashWindow::body()
+QLayout *MainWindow::body()
 {
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    this->pages->setContentsMargins(0, 0, 0, 0);
+    pages->setContentsMargins(0, 0, 0, 0);
 
-    this->bar->setContentsMargins(8, 0, 8, 0);
-    this->bar->addWidget(this->controls_bar());
+    bar->setContentsMargins(8, 0, 8, 0);
+    bar->addWidget(controlsBar());
 
     QWidget *msg_ref = new QWidget(this);
     msg_ref->setObjectName("MsgRef");
 
-    layout->addLayout(this->pages);
+    layout->addLayout(pages);
     layout->addWidget(msg_ref);
-    layout->addLayout(this->bar);
+    layout->addLayout(bar);
 
     return layout;
 }
 
-void DashWindow::add_pages()
+void MainWindow::addPages()
 {
-    this->add_page("Android Auto", this->openauto, "android_auto");
-    /*
-    this->add_page("Media", new MediaPage(this), "play_circle_outline");
-    this->add_page("Vehicle", new VehiclePage(this), "directions_car");
-    this->add_page("Camera", new CameraPage(this), "camera");
-    this->add_page("Launcher", new LauncherPage(this), "widgets");
-    this->add_page("Settings", new SettingsPage(this), "tune");
-*/
+    addPage("Android Auto", openauto, "android_auto");
+
     // toggle initial page
-    for (QAbstractButton *button : this->rail_group->buttons()) {
+    for (QAbstractButton *button : railGroup->buttons()) {
         if (!button->isHidden()) {
             button->setChecked(true);
             break;
         }
     }
 
-    Shortcut *shortcut = new Shortcut(this->config->get_shortcut("cycle_pages"), this);
-    this->shortcuts->add_shortcut("cycle_pages", "Cycle Pages", shortcut);
+    Shortcut *shortcut = new Shortcut(config->GetShortcut("cycle_pages"), this);
+    shortcuts->AddShortcut("cycle_pages", "Cycle Pages", shortcut);
     connect(shortcut, &Shortcut::activated, [this]() {
-        int idx = this->rail_group->checkedId();
-        QList<QAbstractButton *> buttons = this->rail_group->buttons();
+        int idx = railGroup->checkedId();
+        QList<QAbstractButton *> buttons = railGroup->buttons();
         do {
             idx = (idx + 1) % buttons.size();
         } while (buttons[idx]->isHidden());
@@ -177,7 +159,7 @@ void DashWindow::add_pages()
     });
 }
 
-void DashWindow::add_page(QString name, QWidget *page, QString icon)
+void MainWindow::addPage(QString name, QWidget *page, QString icon)
 {
     page->setObjectName(name);
 
@@ -186,23 +168,23 @@ void DashWindow::add_page(QString name, QWidget *page, QString icon)
     button->setCheckable(true);
     button->setFlat(true);
     button->setIconSize(Theme::icon_32);
-    button->setIcon(this->theme->make_button_icon(icon, button));
+    button->setIcon(theme->MakeButtonIcon(icon, button));
 
-    Shortcut *shortcut = new Shortcut(this->config->get_shortcut(name), this);
-    this->shortcuts->add_shortcut(name, name, shortcut);
+    Shortcut *shortcut = new Shortcut(config->GetShortcut(name), this);
+    shortcuts->AddShortcut(name, name, shortcut);
     connect(shortcut, &Shortcut::activated, [this, button]() {
         if (!button->isHidden())
             button->setChecked(true);
     });
 
-    int idx = this->pages->addWidget(page);
-    this->rail_group->addButton(button, idx);
-    this->rail->addWidget(button);
+    int idx = pages->addWidget(page);
+    railGroup->addButton(button, idx);
+    rail->addWidget(button);
 
-    button->setVisible(this->config->get_page(page));
+    button->setVisible(config->Page(page));
 }
 
-QWidget *DashWindow::controls_bar()
+QWidget *MainWindow::controlsBar()
 {
     QWidget *widget = new QWidget(this);
     widget->setObjectName("ControlsBar");
@@ -210,49 +192,35 @@ QWidget *DashWindow::controls_bar()
     QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-/*
-    Dialog *power_dialog = new Dialog(true, this);
-    power_dialog->set_title("power off");
-    power_dialog->set_body(this->power_control());
 
-    QPushButton *shutdown_button = new QPushButton(widget);
-    shutdown_button->setFlat(true);
-    shutdown_button->setIconSize(Theme::icon_26);
-    shutdown_button->setIcon(this->theme->make_button_icon("power_settings_new", shutdown_button));
-    connect(shutdown_button, &QPushButton::clicked, [power_dialog]() { power_dialog->open(); });
-*/
     QPushButton *exit_button = new QPushButton(widget);
     exit_button->setFlat(true);
     exit_button->setIconSize(Theme::icon_26);
-    exit_button->setIcon(this->theme->make_button_icon("close", exit_button));
+    exit_button->setIcon(theme->MakeButtonIcon("close", exit_button));
     connect(exit_button, &QPushButton::clicked, []() { qApp->exit(); });
 
-    layout->addLayout(this->quick_views());
+    layout->addLayout(quickViews());
     layout->addStretch();
-    //layout->addWidget(shutdown_button);
+
     layout->addWidget(exit_button);
-
- //   widget->setVisible(this->config->get_controls_bar());
- //   connect(this->config, &Config::controls_bar_changed, [widget](bool controls_bar) { widget->setVisible(controls_bar); });
-
     return widget;
 }
 
-QLayout *DashWindow::quick_views()
+QLayout *MainWindow::quickViews()
 {
     QStackedLayout *layout = new QStackedLayout();
     layout->setContentsMargins(0, 0, 0, 0);
 
-    for (auto quick_view : this->config->get_quick_views().values())
-        layout->addWidget(quick_view);
-    layout->setCurrentWidget(this->config->get_quick_view(this->config->get_quick_view()));
-    connect(this->config, &Config::quick_view_changed,
-            [this, layout](QString quick_view) { layout->setCurrentWidget(this->config->get_quick_view(quick_view)); });
+    for (auto quickView : config->GetQuickViews().values())
+        layout->addWidget(quickView);
+    layout->setCurrentWidget(config->GetQuickView(config->QuickView()));
+    connect(config, &Config::quickViewChanged,
+            [this, layout](QString quickView) { layout->setCurrentWidget(config->GetQuickView(quickView)); });
 
     return layout;
 }
 
-QWidget *DashWindow::controls_widget()
+QWidget *MainWindow::controlsWidget()
 {
     QWidget *widget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -263,52 +231,33 @@ QWidget *DashWindow::controls_widget()
     QPushButton *volume = new QPushButton(widget);
     volume->setFlat(true);
     volume->setIconSize(Theme::icon_26);
-    volume->setIcon(this->theme->make_button_icon("volume_up", volume));
-/*
-    Dialog *volume_dialog = new Dialog(false, volume);
-    volume_dialog->set_body(volume_slider(true, this));
+    volume->setIcon(theme->MakeButtonIcon("volume_up", volume));
 
-    QElapsedTimer *volume_timer = new QElapsedTimer();
-    connect(volume, &QPushButton::pressed, [volume_timer]() { volume_timer->start(); });
-    connect(volume, &QPushButton::released, [config = this->config, volume_timer, volume_dialog]() {
-        if (volume_timer->hasExpired(1000))
-            config->set_volume(0);
-        else
-            volume_dialog->open(2000);
-    });
-    */
-    QLabel *volume_value = new QLabel(QString::number(this->config->get_volume()), widget);
+    QLabel *volume_value = new QLabel(QString::number(config->Volume()), widget);
     volume_value->setFont(Theme::font_10);
-    connect(this->config, &Config::volume_changed,
+    connect(config, &Config::volumeChanged,
             [volume_value](int volume) { volume_value->setText(QString::number(volume)); });
 
     QPushButton *brightness = new QPushButton(widget);
     brightness->setFlat(true);
     brightness->setIconSize(Theme::icon_26);
-    brightness->setIcon(this->theme->make_button_icon("brightness_high", brightness));
-/*
-    Dialog *brightness_dialog = new Dialog(false, brightness);
-    brightness_dialog->set_body(brightness_slider(false, this));
+    brightness->setIcon(theme->MakeButtonIcon("brightness_high", brightness));
 
-    connect(brightness, &QPushButton::clicked, [brightness_dialog]() {
-        brightness_dialog->open(2000);
-    });
-    */
-    QLabel *brightness_value = new QLabel(QString::number(std::ceil(this->config->get_brightness() / 2.55)), widget);
+    QLabel *brightness_value = new QLabel(QString::number(std::ceil(config->Brightness() / 2.55)), widget);
     brightness_value->setFont(Theme::font_10);
-    connect(this->config, &Config::brightness_changed, [brightness_value](int brightness) {
+    connect(config, &Config::brightnessChanged, [brightness_value](int brightness) {
         brightness_value->setText(QString::number(std::ceil(brightness / 2.55)));
     });
 
-    QPushButton *dark_mode = new QPushButton(widget);
-    dark_mode->setFlat(true);
-    dark_mode->setIconSize(Theme::icon_26);
-    dark_mode->setIcon(this->theme->make_button_icon("dark_mode", dark_mode));
-    connect(dark_mode, &QPushButton::clicked, [this]() {
-        bool mode = !theme->get_mode();
-        this->config->set_dark_mode(mode);
-        this->theme->set_mode(mode);
-        this->theme->update();
+    QPushButton *darkMode = new QPushButton(widget);
+    darkMode->setFlat(true);
+    darkMode->setIconSize(Theme::icon_26);
+    darkMode->setIcon(theme->MakeButtonIcon("darkMode", darkMode));
+    connect(darkMode, &QPushButton::clicked, [this]() {
+        bool mode = !theme->Mode;
+        config->DarkMode = mode;
+        theme->Mode = mode;
+        theme->Update();
     });
 
     layout->addWidget(volume, 1);
@@ -317,12 +266,12 @@ QWidget *DashWindow::controls_widget()
     layout->addWidget(brightness, 1);
     layout->addWidget(brightness_value, 7);
     layout->addStretch();
-    layout->addWidget(dark_mode, 1);
+    layout->addWidget(darkMode, 1);
 
     return widget;
 }
 
-QWidget *DashWindow::power_control()
+QWidget *MainWindow::powerControl()
 {
     QWidget *widget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -332,8 +281,8 @@ QWidget *DashWindow::power_control()
     QPushButton *restart = new QPushButton(widget);
     restart->setFlat(true);
     restart->setIconSize(Theme::icon_42);
-    restart->setIcon(this->theme->make_button_icon("refresh", restart));
-    connect(restart, &QPushButton::clicked, [config = this->config]() {
+    restart->setIcon(theme->MakeButtonIcon("refresh", restart));
+    connect(restart, &QPushButton::clicked, [config = config]() {
         config->save();
         sync();
         system("sudo shutdown -r now");
@@ -343,8 +292,8 @@ QWidget *DashWindow::power_control()
     QPushButton *power_off = new QPushButton(widget);
     power_off->setFlat(true);
     power_off->setIconSize(Theme::icon_42);
-    power_off->setIcon(this->theme->make_button_icon("power_settings_new", power_off));
-    connect(power_off, &QPushButton::clicked, [config = this->config]() {
+    power_off->setIcon(theme->MakeButtonIcon("power_settings_new", power_off));
+    connect(power_off, &QPushButton::clicked, [config = config]() {
         config->save();
         sync();
         system("sudo shutdown -h now");

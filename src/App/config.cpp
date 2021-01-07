@@ -8,179 +8,102 @@
 
 Config::Config()
     : QObject(qApp),
-      openauto_config(std::make_shared<openauto::configuration::Configuration>()),
-      openauto_button_codes(openauto_config->getButtonCodes()),
+      openautoConfig(std::make_shared<openauto::configuration::Configuration>()),
+      openautoButtonCodes(openautoConfig->getButtonCodes()),
       settings(QSettings::IniFormat, QSettings::UserScope, "dash")
 {
-  //  this->load_brightness_plugins();
-  //  this->brightness_active_plugin = new QPluginLoader(this);
+ 
 
-    this->volume = this->settings.value("volume", 50).toInt();
-    this->dark_mode = this->settings.value("dark_mode", false).toBool();
-    this->brightness = this->settings.value("brightness", 255).toInt();
-    this->si_units = this->settings.value("si_units", false).toBool();
-    this->color_light = this->settings.value("color_light", "#000000").toString();
-    this->color_dark = this->settings.value("color_dark", "#ffffff").toString();
-    this->bluetooth_device = this->settings.value("Bluetooth/device", QString()).toString();
-    this->radio_station = this->settings.value("Radio/station", 98.0).toDouble();
-    this->radio_muted = this->settings.value("Radio/muted", true).toBool();
-    this->media_home = this->settings.value("media_home", QDir().absolutePath()).toString();
-    this->wireless_active = this->settings.value("Wireless/active", false).toBool();
-    this->wireless_address = this->settings.value("Wireless/address", "0.0.0.0").toString();
-    this->mouse_active = this->settings.value("mouse_active", true).toBool();
-//    this->launcher_home = this->settings.value("Launcher/home", QDir().absolutePath()).toString();
-//    this->launcher_auto_launch = this->settings.value("Launcher/auto_launch", false).toBool();
-//    this->launcher_app = this->settings.value("Launcher/app", QString()).toString();
-    this->quick_view = this->settings.value("quick_view", "none").toString();
-    this->brightness_plugin = this->settings.value("brightness_plugin", "mocked").toString();
-//    this->controls_bar = this->settings.value("controls_bar", false).toBool();
-    this->scale = this->settings.value("scale", 1.0).toDouble();
-//    this->cam_name = this->settings.value("Camera/name").toString();
-//    this->cam_network_url = this->settings.value("Camera/stream_url").toString();
-//    this->cam_local_device = this->settings.value("Camera/local_device").toString();
-//    this->cam_is_network = this->settings.value("Camera/is_network").toBool();
-//    this->cam_local_format_override = this->settings.value("Camera/local_format_override").value<QVideoFrame::PixelFormat>();
-//    this->cam_autoconnect = this->settings.value("Camera/automatically_reconnect").toBool();
-//    this->cam_autoconnect_time_secs = this->settings.value("Camera/auto_reconnect_time_secs", 6).toInt();
-//    this->vehicle_plugin = this->settings.value("Vehicle/plugin", QString()).toString();
-//    this->vehicle_can_bus = this->settings.value("Vehicle/can_bus", false).toBool();
-//    this->vehicle_interface = this->settings.value("Vehicle/interface", QString()).toString();
-    this->settings.beginGroup("Pages");
-    for (auto key : this->settings.childKeys())
-        this->pages[key] = this->settings.value(key, true).toBool();
-    this->settings.endGroup();
-    this->settings.beginGroup("Shortcuts");
-    for (auto key : this->settings.childKeys())
-        this->shortcuts[key] = this->settings.value(key, QString()).toString();
-    this->settings.endGroup();
-
-//    this->update_system_volume();
-
-//    if (this->brightness_active_plugin->isLoaded())
-//        this->brightness_active_plugin->unload();
-//    this->brightness_active_plugin->setFileName(this->brightness_plugins[this->brightness_plugin].absoluteFilePath());
+    volume = settings.value("volume", 50).toInt();
+    DarkMode = settings.value("DarkMode", false).toBool();
+    brightness = settings.value("brightness", 255).toInt();
+    siUnits = settings.value("siUnits", false).toBool();
+    ColorLight = settings.value("ColorLight", "#000000").toString();
+    ColorDark = settings.value("ColorDark", "#ffffff").toString();
+    BluetoothDevice = settings.value("Bluetooth/device", QString()).toString();
+    RadioStation = settings.value("Radio/station", 98.0).toDouble();
+    RadioMuted = settings.value("Radio/muted", true).toBool();
+    WirelessActive = settings.value("Wireless/active", false).toBool();
+    WirelessAddress = settings.value("Wireless/address", "0.0.0.0").toString();
+    MouseActive = settings.value("MouseActive", true).toBool();
+    quickView = settings.value("quickView", "none").toString();
+    Scale = settings.value("Scale", 1.0).toDouble();
+    settings.beginGroup("Pages");
+    for (auto key : settings.childKeys())
+        pages[key] = settings.value(key, true).toBool();
+    settings.endGroup();
+    settings.beginGroup("Shortcuts");
+    for (auto key : settings.childKeys())
+        shortcuts[key] = settings.value(key, QString()).toString();
+    settings.endGroup();
 }
 
 Config::~Config()
 {
-    this->save();
+    save();
 }
 
 void Config::save()
 {
-    if (this->volume != this->settings.value("volume", 50).toInt())
-        this->settings.setValue("volume", this->volume);
-    if (this->dark_mode != this->settings.value("dark_mode", false).toBool())
-        this->settings.setValue("dark_mode", this->dark_mode);
-    if (this->brightness != this->settings.value("brightness", 255).toInt())
-        this->settings.setValue("brightness", this->brightness);
-    if (this->si_units != this->settings.value("si_units", false).toBool())
-        this->settings.setValue("si_units", this->si_units);
-    if (this->color_light != this->settings.value("color_light", "#000000").toString())
-        this->settings.setValue("color_light", this->color_light);
-    if (this->color_dark != this->settings.value("color_dark", "#ffffff").toString())
-        this->settings.setValue("color_dark", this->color_dark);
-    if (this->bluetooth_device != this->settings.value("Bluetooth/device", QString()).toString())
-        this->settings.setValue("Bluetooth/device", this->bluetooth_device);
-    if (this->radio_station != this->settings.value("Radio/station", 98.0).toDouble())
-        this->settings.setValue("Radio/station", this->radio_station);
-    if (this->radio_muted != this->settings.value("Radio/muted", true).toBool())
-        this->settings.setValue("Radio/muted", this->radio_muted);
-    if (this->media_home != this->settings.value("media_home", QDir().absolutePath()).toString())
-        this->settings.setValue("media_home", this->media_home);
-    if (this->wireless_active != this->settings.value("Wireless/active", false).toBool())
-        this->settings.setValue("Wireless/active", this->wireless_active);
-    if (this->wireless_address != this->settings.value("Wireless/address", "0.0.0.0").toString())
-        this->settings.setValue("Wireless/address", this->wireless_address);
-/*    if (this->launcher_home != this->settings.value("Launcher/home", QDir().absolutePath()).toString())
-        this->settings.setValue("Launcher/home", this->launcher_home);
-    if (this->launcher_auto_launch != this->settings.value("Launcher/auto_launch", false).toBool())
-        this->settings.setValue("Launcher/auto_launch", this->launcher_auto_launch);
-    if (this->launcher_app != this->settings.value("Launcher/app", QString()).toString())
-        this->settings.setValue("Launcher/app", this->launcher_app);
-*/    if (this->mouse_active != this->settings.value("mouse_active", true).toBool())
-        this->settings.setValue("mouse_active", this->mouse_active);
-    if (this->quick_view != this->settings.value("quick_view", "volume").toString())
-        this->settings.setValue("quick_view", this->quick_view);
-    if (this->brightness_plugin != this->settings.value("brightness_plugin", "mocked").toString())
-        this->settings.setValue("brightness_plugin", this->brightness_plugin);
-//    if (this->controls_bar != this->settings.value("controls_bar", false).toBool())
-//        this->settings.setValue("controls_bar", this->controls_bar);
-    if (this->scale != this->settings.value("scale", 1.0).toDouble())
-        this->settings.setValue("scale", this->scale);
-/*    if (this->cam_name != this->settings.value("Camera/name").toString())
-        this->settings.setValue("Camera/name", this->cam_name);
-    if (this->cam_network_url != this->settings.value("Camera/stream_url").toString())
-        this->settings.setValue("Camera/stream_url", this->cam_network_url);
-    if (this->cam_local_device != this->settings.value("Camera/local_device").toString())
-        this->settings.setValue("Camera/local_device", this->cam_local_device);
-    if (this->cam_is_network != this->settings.value("Camera/is_network").toBool())
-        this->settings.setValue("Camera/is_network", this->cam_is_network);
-    if (this->cam_local_format_override != this->settings.value("Camera/local_format_override").value<QVideoFrame::PixelFormat>())
-        this->settings.setValue("Camera/local_format_override", this->cam_local_format_override);
-    if (this->cam_autoconnect != this->settings.value("Camera/automatically_reconnect").toBool())
-        this->settings.setValue("Camera/automatically_reconnect", this->cam_autoconnect);
-    if (this->cam_autoconnect_time_secs != this->settings.value("Camera/auto_reconnect_time_secs").toInt())
-        this->settings.setValue("Camera/auto_reconnect_time_secs", this->cam_autoconnect_time_secs);
-    if (this->vehicle_plugin != this->settings.value("Vehicle/plugin").toString())
-        this->settings.setValue("Vehicle/plugin", this->vehicle_plugin);
-    if (this->vehicle_can_bus != this->settings.value("Vehicle/can_bus").toBool())
-        this->settings.setValue("Vehicle/can_bus", this->vehicle_can_bus);
-    if (this->vehicle_interface != this->settings.value("Vehicle/interface").toString())
-        this->settings.setValue("Vehicle/interface", this->vehicle_interface);
-*/    for (auto id : this->pages.keys()) {
-        QString config_key = QString("Pages/%1").arg(id);
-        bool page_enabled = this->pages[id];
-        if (page_enabled != this->settings.value(config_key, true).toBool())
-            this->settings.setValue(config_key, page_enabled);
+    if (volume != settings.value("volume", 50).toInt())
+        settings.setValue("volume", volume);
+    if (DarkMode != settings.value("DarkMode", false).toBool())
+        settings.setValue("DarkMode", DarkMode);
+    if (brightness != settings.value("brightness", 255).toInt())
+        settings.setValue("brightness", brightness);
+    if (siUnits != settings.value("siUnits", false).toBool())
+        settings.setValue("siUnits", siUnits);
+    if (ColorLight != settings.value("ColorLight", "#000000").toString())
+        settings.setValue("ColorLight", ColorLight);
+    if (ColorDark != settings.value("ColorDark", "#ffffff").toString())
+        settings.setValue("ColorDark", ColorDark);
+    if (BluetoothDevice != settings.value("Bluetooth/device", QString()).toString())
+        settings.setValue("Bluetooth/device", BluetoothDevice);
+    if (RadioStation != settings.value("Radio/station", 98.0).toDouble())
+        settings.setValue("Radio/station", RadioStation);
+    if (RadioMuted != settings.value("Radio/muted", true).toBool())
+        settings.setValue("Radio/muted", RadioMuted);
+    if (WirelessActive != settings.value("Wireless/active", false).toBool())
+        settings.setValue("Wireless/active", WirelessActive);
+    if (WirelessAddress != settings.value("Wireless/address", "0.0.0.0").toString())
+        settings.setValue("Wireless/address", WirelessAddress);
+    if (MouseActive != settings.value("MouseActive", true).toBool())
+        settings.setValue("MouseActive", MouseActive);
+    if (quickView != settings.value("quickView", "volume").toString())
+        settings.setValue("quickView", quickView);
+    if (Scale != settings.value("Scale", 1.0).toDouble())
+        settings.setValue("Scale", Scale);
+for (auto id : pages.keys()) {
+        QString configKey = QString("Pages/%1").arg(id);
+        bool page_enabled = pages[id];
+        if (page_enabled != settings.value(configKey, true).toBool())
+            settings.setValue(configKey, page_enabled);
     }
-    for (auto id : this->shortcuts.keys()) {
-        QString config_key = QString("Shortcuts/%1").arg(id);
-        QString shortcut = this->shortcuts[id];
-        if (shortcut != this->settings.value(config_key, QString()).toString())
-            this->settings.setValue(config_key, shortcut);
+    for (auto id : shortcuts.keys()) {
+        QString configKey = QString("Shortcuts/%1").arg(id);
+        QString shortcut = shortcuts[id];
+        if (shortcut != settings.value(configKey, QString()).toString())
+            settings.setValue(configKey, shortcut);
     }
 
-    this->settings.sync();
+    settings.sync();
 }
 
-Config *Config::get_instance()
+Config *Config::getInstance()
 {
     static Config config;
     return &config;
 }
 
-/*void Config::load_brightness_plugins()
-{
-    for (const QFileInfo &plugin : Config::plugin_dir("brightness").entryInfoList(QDir::Files)) {
-        if (QLibrary::isLibrary(plugin.absoluteFilePath()))
-            this->brightness_plugins[Config::fmt_plugin(plugin.baseName())] = plugin;
-    }
-}
-*/
+
 /*
-void Config::update_system_volume()
+void Config::Update_system_volume()
 {
     static QString command("amixer set Master %1% --quiet");
 
     QProcess *lProc = new QProcess();
-    lProc->start(command.arg(this->volume));
+    lProc->start(command.arg(volume));
     lProc->waitForFinished();
 }
 */
-void Config::set_volume(int volume)
-{
-    this->volume = std::max(0, std::min(volume, 100));
- //   this->update_system_volume();
-    emit volume_changed(this->volume);
-}
 
-void Config::set_brightness(int brightness)
-{
-    this->brightness = std::max(76, std::min(brightness, 255));
-
- //   if (BrightnessPlugin *plugin = qobject_cast<BrightnessPlugin *>(this->brightness_active_plugin->instance()))
- //       plugin->set(this->brightness);
-
-    emit brightness_changed(this->brightness);
-}

@@ -14,32 +14,32 @@ static const QString GPIOX_ACTIVE_LOW_PATH(GPIOX_DIR + "/active_low");
 
 GpioWatcher::GpioWatcher(QObject *parent) : QObject(parent)
 {
-    this->watcher = new QFileSystemWatcher(this);
+    watcher = new QFileSystemWatcher(this);
     for (auto gpio : QDir(GPIO_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         if (GPIOX_REGEX.exactMatch(gpio) && QFile(GPIOX_ACTIVE_LOW_PATH.arg(gpio)).exists())
-            this->watcher->addPath(GPIOX_VALUE_PATH.arg(gpio));
+            watcher->addPath(GPIOX_VALUE_PATH.arg(gpio));
     }
 
-    connect(this->watcher, &QFileSystemWatcher::fileChanged,
-            [this](QString path) { emit gpio_triggered(QFileInfo(path).dir().dirName()); });
+    connect(watcher, &QFileSystemWatcher::fileChanged,
+            [this](QString path) { emit gpioTriggered(QFileInfo(path).dir().dirName()); });
 
-    this->disable();
+    disable();
 }
 
 ShortcutInput::ShortcutInput(QString shortcut, QWidget *parent) : QPushButton(shortcut, parent)
 {
-    this->gpio_watcher = new GpioWatcher(this);
-    connect(this->gpio_watcher, &GpioWatcher::gpio_triggered, [this](QString gpio) {
-        this->setText(gpio);
-        emit shortcut_updated(gpio);
+    gpioWatcher = new GpioWatcher(this);
+    connect(gpioWatcher, &GpioWatcher::gpioTriggered, [this](QString gpio) {
+        setText(gpio);
+        emit shortcutUpdated(gpio);
     });
 
     QElapsedTimer *timer = new QElapsedTimer();
     connect(this, &QPushButton::pressed, [timer]() { timer->start(); });
     connect(this, &QPushButton::released, [this, timer]() {
         if (timer->hasExpired(500)) {
-            this->setText(QString());
-            emit shortcut_updated(this->text());
+            setText(QString());
+            emit shortcutUpdated(text());
         }
     });
 }
@@ -51,86 +51,86 @@ void ShortcutInput::keyPressEvent(QKeyEvent *event)
         return;
 
     QKeySequence shortcut(event->modifiers() + k);
-    this->setText(shortcut.toString());
-    emit shortcut_updated(this->text());
+    setText(shortcut.toString());
+    emit shortcutUpdated(text());
 }
 
-Shortcut::Shortcut(QString shortcut, QWidget *parent) : QObject(parent), gpio_value_attribute(parent)
+Shortcut::Shortcut(QString shortcutStr, QWidget *parent) : QObject(parent), gpioValueAttribute(parent)
 {
-    this->shortcut = shortcut;
-    this->key = new QShortcut(parent);
-    this->gpio = new QFileSystemWatcher(parent);
+    shortcut = shortcutStr;
+    key = new QShortcut(parent);
+    gpio = new QFileSystemWatcher(parent);
 
-    connect(this->gpio, &QFileSystemWatcher::fileChanged, [this](QString) {
-        if (this->gpio_value_attribute.isOpen()) {
-            this->gpio_value_attribute.seek(0);
-            if (this->gpio_active_low == this->gpio_value_attribute.read(1).at(0)) {
-                this->gpio->blockSignals(true);
+    connect(gpio, &QFileSystemWatcher::fileChanged, [this](QString) {
+        if (gpioValueAttribute.isOpen()) {
+            gpioValueAttribute.seek(0);
+            if (gpioActiveLow == gpioValueAttribute.read(1).at(0)) {
+                gpio->blockSignals(true);
                 emit activated();
-                QTimer::singleShot(300, [gpio = this->gpio]() { gpio->blockSignals(false); });
+                QTimer::singleShot(300, [gpio = gpio]() { gpio->blockSignals(false); });
             }
             else {
-                qDebug() << "[Dash][Shortcut]" << this->shortcut << ": active low != value"; // temp
+                qDebug() << "[Dash][Shortcut]" << shortcut << ": active low != value"; // temp
             }
         }
         else {
-            qDebug() << "[Dash][Shortcut]" << this->shortcut << ":" << this->gpio_value_attribute.fileName() << "is not open"; // temp
+            qDebug() << "[Dash][Shortcut]" << shortcut << ":" << gpioValueAttribute.fileName() << "is not open"; // temp
         }
     });
-    connect(this->key, &QShortcut::activated, [this]() { emit activated(); });
+    connect(key, &QShortcut::activated, [this]() { emit activated(); });
 }
 
 Shortcut::~Shortcut()
 {
-    if (this->gpio_value_attribute.isOpen()) this->gpio_value_attribute.close();
+    if (gpioValueAttribute.isOpen()) gpioValueAttribute.close();
 }
 
-void Shortcut::set_shortcut(QString shortcut)
+void Shortcut::SetShortcut(QString shortcut)
 {
-    this->key->setKey(QKeySequence());
+    key->setKey(QKeySequence());
 
-    QStringList gpios = this->gpio->files();
-    if (!gpios.isEmpty()) this->gpio->removePaths(gpios);
-    if (this->gpio_value_attribute.isOpen()) this->gpio_value_attribute.close();
+    QStringList gpios = gpio->files();
+    if (!gpios.isEmpty()) gpio->removePaths(gpios);
+    if (gpioValueAttribute.isOpen()) gpioValueAttribute.close();
 
-    this->shortcut = shortcut;
-    if (this->shortcut.startsWith("gpio")) {
-        qDebug() << "[Dash][Shortcut]" << this->shortcut << ": setting shortcut as gpio"; // temp
-        this->gpio_value_attribute.setFileName(GPIOX_VALUE_PATH.arg(this->shortcut));
-        if (this->gpio_value_attribute.open(QIODevice::ReadOnly)) {
-            QFile active_low_attribute(GPIOX_ACTIVE_LOW_PATH.arg(this->shortcut));
+    shortcut = shortcut;
+    if (shortcut.startsWith("gpio")) {
+        qDebug() << "[Dash][Shortcut]" << shortcut << ": setting shortcut as gpio"; // temp
+        gpioValueAttribute.setFileName(GPIOX_VALUE_PATH.arg(shortcut));
+        if (gpioValueAttribute.open(QIODevice::ReadOnly)) {
+            QFile active_low_attribute(GPIOX_ACTIVE_LOW_PATH.arg(shortcut));
             if (active_low_attribute.open(QIODevice::ReadOnly)) {
-                this->gpio_active_low = active_low_attribute.read(1)[0];
+                gpioActiveLow = active_low_attribute.read(1)[0];
                 active_low_attribute.close();
-                this->gpio->addPath(this->gpio_value_attribute.fileName());
+                gpio->addPath(gpioValueAttribute.fileName());
             }
             else {
-                qDebug() << "[Dash][Shortcut]" << this->shortcut << ": failed to open" << active_low_attribute; // temp
+                qDebug() << "[Dash][Shortcut]" << shortcut << ": failed to open" << active_low_attribute; // temp
             }
         }
         else {
-            qDebug() << "[Dash][Shortcut]" << this->shortcut << ": failed to open" << this->gpio_value_attribute.fileName(); // temp
+            qDebug() << "[Dash][Shortcut]" << shortcut << ": failed to open" << gpioValueAttribute.fileName(); // temp
         }
     }
-    else if (!this->shortcut.isNull()) {
-        qDebug() << "[Dash][Shortcut]" << this->shortcut << ": setting shortcut as key"; // temp
-        this->key->setKey(QKeySequence::fromString(this->shortcut));
+    else if (!shortcut.isNull()) {
+        qDebug() << "[Dash][Shortcut]" << shortcut << ": setting shortcut as key"; // temp
+        key->setKey(QKeySequence::fromString(shortcut));
     }
 }
 
-void Shortcuts::add_shortcut(QString id, QString description, Shortcut *shortcut)
+void Shortcuts::AddShortcut(QString id, QString description, Shortcut *shortcut)
 {
-    this->shortcuts[id] = {description, shortcut};
-    emit shortcut_added(id, description, shortcut);
+    shortcuts[id] = {description, shortcut};
+    emit shortcutAdded(id, description, shortcut);
 }
 
-void Shortcuts::initialize_shortcuts()
+void Shortcuts::InitShortcuts()
 {
-    for (auto shortcut : this->shortcuts)
-        shortcut.second->initialize_shortcut();
+    for (auto shortcut : shortcuts)
+        shortcut.second->InitShortcut();
 }
 
-Shortcuts *Shortcuts::get_instance()
+Shortcuts *Shortcuts::getInstance()
 {
     static Shortcuts shortcuts;
     return &shortcuts;

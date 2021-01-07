@@ -15,14 +15,14 @@ class GpioWatcher : public QObject {
    public:
     GpioWatcher(QObject *parent = nullptr);
 
-    inline void enable() { this->watcher->blockSignals(false); }
-    inline void disable() { this->watcher->blockSignals(true); }
+    inline void enable() { watcher->blockSignals(false); }
+    inline void disable() { watcher->blockSignals(true); }
 
    private:
     QFileSystemWatcher *watcher;
 
    signals:
-    void gpio_triggered(QString gpio);
+    void gpioTriggered(QString gpio);
 };
 
 class ShortcutInput : public QPushButton {
@@ -33,14 +33,14 @@ class ShortcutInput : public QPushButton {
 
    protected:
     void keyPressEvent(QKeyEvent *event);
-    inline void focusInEvent(QFocusEvent *) { this->gpio_watcher->enable(); }
-    inline void focusOutEvent(QFocusEvent *) { this->gpio_watcher->disable(); }
+    inline void focusInEvent(QFocusEvent *) { gpioWatcher->enable(); }
+    inline void focusOutEvent(QFocusEvent *) { gpioWatcher->disable(); }
 
    private:
-    GpioWatcher *gpio_watcher;
+    GpioWatcher *gpioWatcher;
 
    signals:
-    void shortcut_updated(QString shortcut);
+    void shortcutUpdated(QString shortcut);
 };
 
 class Shortcut : public QObject {
@@ -50,16 +50,16 @@ class Shortcut : public QObject {
     Shortcut(QString shortcut, QWidget *parent);
     ~Shortcut();
 
-    inline QString to_str() { return this->shortcut; }
-    void set_shortcut(QString shortcut);
-    inline void initialize_shortcut() { this->set_shortcut(this->shortcut); }
+    inline QString ToString() { return shortcut; }
+    void SetShortcut(QString shortcut);
+    inline void InitShortcut() { SetShortcut(shortcut); }
 
    private:
     QString shortcut;
     QShortcut *key;
     QFileSystemWatcher *gpio;
-    QFile gpio_value_attribute;
-    int gpio_active_low;
+    QFile gpioValueAttribute;
+    int gpioActiveLow;
 
    signals:
     void activated();
@@ -71,17 +71,17 @@ class Shortcuts : public QObject {
    public:
     Shortcuts() : QObject(qApp) {}
 
-    void add_shortcut(QString id, QString description, Shortcut *shortcut);
-    void initialize_shortcuts();
+    void AddShortcut(QString id, QString description, Shortcut *shortcut);
+    void InitShortcuts();
 
-    inline void update_shortcut(QString id, QString shortcut) { this->shortcuts[id].second->set_shortcut(shortcut); }
-    inline QMap<QString, QPair<QString, Shortcut *>> get_shortcuts() { return this->shortcuts; }
+    inline void UpdateShortcut(QString id, QString shortcut) { shortcuts[id].second->SetShortcut(shortcut); }
+    inline QMap<QString, QPair<QString, Shortcut *>> GetShortcuts() { return shortcuts; }
 
-    static Shortcuts *get_instance();
+    static Shortcuts *getInstance();
 
    private:
     QMap<QString, QPair<QString, Shortcut *>> shortcuts;
 
    signals:
-    void shortcut_added(QString id, QString description, Shortcut *shortcut);
+    void shortcutAdded(QString id, QString description, Shortcut *shortcut);
 };
