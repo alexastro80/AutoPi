@@ -196,7 +196,14 @@ QWidget *MainWindow::controlsBar()
     QPushButton *exit_button = new QPushButton(widget);
     exit_button->setFlat(true);
     exit_button->setIconSize(Theme::icon_26);
-    exit_button->setIcon(theme->MakeButtonIcon("close", exit_button));
+    if(config->DarkMode)
+    {
+        exit_button->setIcon(theme->MakeButtonIcon("dark/exit", exit_button));
+    }
+    else
+    {
+        exit_button->setIcon(theme->MakeButtonIcon("light/exit", exit_button));
+    }
     connect(exit_button, &QPushButton::clicked, []() { qApp->exit(); });
 
     layout->addLayout(quickViews());

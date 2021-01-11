@@ -23,14 +23,19 @@ def double(case, val, count, timer, key, index):
         timer[index] = 0
         count[index] = 0
 
-# constantsaabbaaaa
+# constants
 maxVal = 65536
-jConstant = 40
+jConstant = 5
+
 pConstant = 100
-swConstant = 500
+swConstant = 300
 dTimerConst = 10
-xConst = 8
-yConst = 8
+rightConst = 6
+leftConst = 6
+upConst = 10
+downConst = 20
+xConst = 6 #Deadzone x
+yConst = 6 #Deadzone y
 leftBound = int(maxVal/xConst)
 rightBound = int((xConst - 1)*maxVal/xConst)
 upBound = int(maxVal/yConst)
@@ -40,11 +45,7 @@ timers = [0, 0, 0, 0, 0]
 counters = [0, 0, 0, 0, 0]
 keys = ['b', 'b', 'v', 'n', 'h']
 
-# open application
-#os.system("sudo /home/pi/openauto/bin/autoapp &")
-# give time to open
-time.sleep(1)
-pyautogui.click(700, 250)
+
 #Setup
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 cs = digitalio.DigitalInOut(board.CE0)
@@ -64,21 +65,29 @@ while True:
     # X Axisb
     Xval = joyX.value
     if(Xval > rightBound):
-        Xval = jConstant
+        Xval = int(((Xval - rightBound)/(maxVal - rightBound))*jConstant)
+        Xval = 1.5*(Xval * Xval) + Xval/2
     elif(Xval < leftBound):
-        Xval = -jConstant
+        Xval = int(((leftBound-Xval)/leftBound)*jConstant)
+        Xval = 1.5*(Xval * Xval) + Xval/2
+        Xval = Xval * -1
     else:
         Xval = 0
-
+#    print("Xval: "+ str(Xval))
     #Y Axis
     Yval = joyY.value
-    if(Yval < upBound):
-        Yval = -jConstant
-    elif(Yval > downBound):
-        Yval = jConstant
+    if(Yval > downBound):
+#        print(Yval)
+        Yval = int(((Yval - downBound)/(maxVal - downBound))*jConstant)
+        Yval = 1.5*(Yval * Yval) + Yval/2
+    elif(Yval < upBound):
+#        print(Yval)
+        Yval = int(((upBound-Yval)/upBound)*jConstant)
+        Yval = 1.5*(Yval * Yval) + Yval/2
+        Yval = Yval * -1
     else:
         Yval = 0
-
+ #   print("Yval: "+ str(Yval))
     #cases
     up = (Yval < 0)
     down = (Yval > 0)
@@ -130,7 +139,7 @@ while True:
     else:
         swCounter = 0
 
-    print(pyautogui.position())
+    #print(pyautogui.position())
 
 
 

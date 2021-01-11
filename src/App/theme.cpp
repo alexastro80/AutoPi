@@ -12,10 +12,12 @@
 #include <QRegularExpression>
 #include <QTextStream>
 #include <QTransform>
+#include <QFileInfo>
 
 #include "App/theme.hpp"
 #include "App/config.hpp"
 
+#include <iostream>
 QFont Theme::font_10 = QFont("Montserrat", 10);
 QFont Theme::font_12 = QFont("Montserrat", 12);
 QFont Theme::font_14 = QFont("Montserrat", 14);
@@ -170,9 +172,24 @@ QIcon Theme::MakeButtonIcon(QString name, QPushButton *button, QString alt_name)
 {
     if (!alt_name.isNull())
         button->setProperty("alt_icon", QVariant::fromValue(QIcon(QString(":/icons/%1.svg").arg(alt_name))));
-
-    button->setProperty("themed_icon", true);
-    return QIcon(QString(":/icons/%1.svg").arg(name));
+    QFileInfo checkIcon(QString(":/icons/%1.svg").arg(name));
+    
+    if (checkIcon.exists() && checkIcon.isFile())
+    {
+        button->setProperty("themed_icon", true);
+        return QIcon(QString(":/icons/%1.svg").arg(name));
+    }
+    else 
+    {
+        checkIcon = QFileInfo(QString(":/icons/%1.png").arg(name));
+        if (checkIcon.exists() && checkIcon.isFile())
+        {
+            button->setProperty("themed_icon", true);
+            return QIcon(QString(":/icons/%1.png").arg(name));
+        }
+    }
+    std::cout << "Icon Not Found!\n";
+    return QIcon();
 }
 
 void Theme::Update()
