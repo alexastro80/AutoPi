@@ -25,7 +25,7 @@ def main(args):
     pair = svrSock.recvfrom(BUFF_SIZE)
     msg = pair[0].decode()
     sendAddress = pair[1]
-    svrSock.sendto(msg, sendAddress)
+    #svrSock.sendto(msg, sendAddress)
 
 
     obd.logger.setLevel(obd.logging.DEBUG)
