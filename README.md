@@ -1,17 +1,17 @@
 # AutoPi
 ## Version Information: v1.0.0
-####   v0.0.1:    This version includes current files within this Repository.
-####   v0.1.0:    This version includes:
+###   v0.0.1:    This version includes current files within this Repository.
+###   v0.1.0:    This version includes:
 #####               - head emulator openAuto
 #####               - joystick mouse control script
-####   v1.0.0:    This version includes:
+###   v1.0.0:    This version includes:
 #####               - install capability
 #####               - build capability and execution.
-####   v1.1.0:    This version includes:
+###   v1.1.0:    This version includes:
 #####		    - OBD tab
 #####		    - OBD communication
 #####		    - OBD GUI
-####   v1.2.0:    This version includes:
+###   v1.2.0:    This version includes:
 #####	            - Settings capability
 #####		    - Saving and editing settings
 ## Description
