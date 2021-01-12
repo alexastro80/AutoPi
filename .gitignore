@@ -7,3 +7,4 @@
 *.ini
 /bin/
 *.qrc
+/lib/resources/*.qrc
