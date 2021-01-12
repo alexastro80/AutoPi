@@ -172,23 +172,25 @@ QIcon Theme::MakeButtonIcon(QString name, QPushButton *button, QString alt_name)
 {
     if (!alt_name.isNull())
         button->setProperty("alt_icon", QVariant::fromValue(QIcon(QString(":/icons/%1.svg").arg(alt_name))));
-    QFileInfo checkIcon(QString(":/icons/%1.svg").arg(name));
-    
+    QString path;
+    QFileInfo checkIcon;
+    if(mode)
+    {
+        path = QString(":/icons/dark/%1.svg").arg(name);
+    }
+    else
+    {
+        path = QString(":/icons/light/%1.svg").arg(name);
+    }
+    checkIcon = QFileInfo(path);
     if (checkIcon.exists() && checkIcon.isFile())
     {
-        button->setProperty("themed_icon", true);
-        return QIcon(QString(":/icons/%1.svg").arg(name));
+       button->setProperty("themed_icon", true);
+       return QIcon(path);
     }
-    else 
-    {
-        checkIcon = QFileInfo(QString(":/icons/%1.png").arg(name));
-        if (checkIcon.exists() && checkIcon.isFile())
-        {
-            button->setProperty("themed_icon", true);
-            return QIcon(QString(":/icons/%1.png").arg(name));
-        }
-    }
+    
     std::cout << "Icon Not Found!\n";
+    std::cout << path.toStdString() << std::endl;
     return QIcon();
 }
 

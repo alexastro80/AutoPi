@@ -139,7 +139,7 @@ QLayout *MainWindow::body()
 void MainWindow::addPages()
 {
     addPage("Android Auto", openauto, "android_auto");
-    addPage("OBD Viewer", obdview, "android_auto");
+    addPage("OBD Viewer", obdview, "car");
 
     // toggle initial page
     for (QAbstractButton *button : railGroup->buttons()) {
@@ -198,14 +198,8 @@ QWidget *MainWindow::controlsBar()
     QPushButton *exit_button = new QPushButton(widget);
     exit_button->setFlat(true);
     exit_button->setIconSize(Theme::icon_26);
-    if(config->DarkMode)
-    {
-        exit_button->setIcon(theme->MakeButtonIcon("dark/exit", exit_button));
-    }
-    else
-    {
-        exit_button->setIcon(theme->MakeButtonIcon("light/exit", exit_button));
-    }
+    
+    exit_button->setIcon(theme->MakeButtonIcon("exit", exit_button));
     connect(exit_button, &QPushButton::clicked, []() { qApp->exit(); });
 
     layout->addLayout(quickViews());
