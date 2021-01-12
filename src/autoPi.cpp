@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
          size = QSize(args.at(1).toInt(), args.at(2).toInt());
      system("pwd");
      //Launch input if necessary
-     system("./lib/scripts/Input/input.sh &");
+//     system("./lib/scripts/Input/input.sh &");
           
      //Launch OBD.py
      //system("./lib/scripts/OBD/obd.sh &");
