@@ -18,3 +18,9 @@
 ##### This project is focused around developing an open source raspberry pi interface for displaying real-time information for the driver of a vehicle.
 ##### This project is initially focused around mounting a screen display to the dash of a vehicle and reflecting the display on the windshield.
 ##### Version 1.0 based around dash project's main capability of housing openauto within a Qt application.
+
+
+## How to Use:
+##### run lib/scripts/installer.sh in a folder where you want the project
+##### or
+##### git clone this project and then run lib/scripts/install.sh

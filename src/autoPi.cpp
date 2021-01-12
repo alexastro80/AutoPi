@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
      system("./lib/scripts/Input/input.sh &");
           
      //Launch OBD.py
-     system("./lib/scripts/OBD/obd.sh &");
+     //system("./lib/scripts/OBD/obd.sh &");
      
      splash.setPixmap(QPixmap(":/splash.png").scaled(size, Qt::KeepAspectRatio));
      splash.show();
