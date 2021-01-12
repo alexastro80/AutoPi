@@ -46,9 +46,9 @@ const QColor Theme::success_color = QColor(56, 142, 60);
 
 Theme::Theme() : QObject(qApp), palette()
 {
-    QFontDatabase::addApplicationFont(":/fonts/Titillium_Web/TitilliumWeb-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/Montserrat/Montserrat-LightItalic.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/Montserrat/Montserrat-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Nasalization/nasalization-rg.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto/Roboto-Light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto/Roboto-Regular.ttf");
 
     stylesheets["light"] = parseStylesheet(":/stylesheets/light.qss");
     stylesheets["dark"] = parseStylesheet(":/stylesheets/dark.qss");
