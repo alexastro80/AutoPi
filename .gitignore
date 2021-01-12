@@ -1,0 +1,10 @@
+# This file is used to ignore files which are generated
+# ----------------------------------------------------------------------------
+/*build*/
+/aasdk/*build*/
+/openauto/*build*/
+*.user
+*.ini
+/bin/
+*.qrc
+/lib/resources/*.qrc
