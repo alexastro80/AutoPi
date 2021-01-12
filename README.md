@@ -1,9 +1,5 @@
 # AutoPi
 ## Version Information: v1.0.0
-###   v0.0.1:    This version includes current files within this Repository.
-###   v0.1.0:    This version includes:
-#####               - head emulator openAuto
-#####               - joystick mouse control script
 ###   v1.0.0:    This version includes:
 #####               - install capability
 #####               - build capability and execution.
