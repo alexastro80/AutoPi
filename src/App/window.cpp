@@ -19,6 +19,7 @@ MainWindow::MainWindow()
     initConfig();
 
     openauto = new OpenAutoView(this);
+    obdview = new OBDView(this);
     stack = new QStackedWidget(this);
     rail = new QVBoxLayout();
     railGroup = new QButtonGroup(this);
@@ -28,7 +29,7 @@ MainWindow::MainWindow()
     connect(railGroup, QOverload<int, bool>::of(&QButtonGroup::buttonToggled),
             [this](int id, bool) { pages->setCurrentIndex(id); });
     connect(openauto, &OpenAutoView::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
-
+    connect(obdview, &OBDView::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
     connect(config, &Config::scaleChanged, [theme = theme](double scale) { theme->Scale(scale); });
     connect(config, &Config::pageChanged,
             [railGroup = railGroup, pages = pages](QWidget *page, bool enabled) {
@@ -138,6 +139,7 @@ QLayout *MainWindow::body()
 void MainWindow::addPages()
 {
     addPage("Android Auto", openauto, "android_auto");
+    addPage("OBD Viewer", obdview, "android_auto");
 
     // toggle initial page
     for (QAbstractButton *button : railGroup->buttons()) {

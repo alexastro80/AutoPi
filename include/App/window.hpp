@@ -13,6 +13,7 @@
 #include "App/config.hpp"
 #include "App/shortcuts.hpp"
 #include "Views/openauto.hpp"
+#include <Views/obdview.hpp>
 #include "App/theme.hpp"
 
 class MainWindow : public QMainWindow {
@@ -35,6 +36,7 @@ class MainWindow : public QMainWindow {
     Shortcuts *shortcuts;
 
     OpenAutoView *openauto;
+    OBDView* obdview;
     QStackedWidget *stack;
     QVBoxLayout *rail;
     QButtonGroup *railGroup;
