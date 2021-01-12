@@ -19,10 +19,15 @@ for f in files:
                 files2 = os.listdir(path + fStr + "/" + f1Str + "/")
                 for f2 in files2:
                     f2Str = str(f2)
-                    print(fStr + "/" + f1Str + "/" + f2Str)
-                    file.write("\t\t<file>" + fStr + "/" + f1Str + "/" + f2Str + "</file>\n")
+                    if(f2Str.find(".txt")>0 or f2Str.find(".pdf")>0 or f2Str.find(".html")>0):
+                        print("Skipping unnecessary files. . .")
+                    else:
+                        print(fStr + "/" + f1Str + "/" + f2Str)
+                        file.write("\t\t<file>" + fStr + "/" + f1Str + "/" + f2Str + "</file>\n")
             else:
                file.write("\t\t<file>" + fStr + "/" + f1Str + "</file>\n")
+    elif (fStr == "resources.qrc"):
+        print("Skipping resources file. . .\n")
     else:
         file.write("\t\t<file>" + f + "</file>\n")
 
