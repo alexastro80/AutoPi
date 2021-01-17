@@ -14,6 +14,7 @@
 //#include "app/widgets/switch.hpp"
 //#include "app/widgets/dialog.hpp"
 #include "App/theme.hpp"
+#include "App/Worker.hpp"
 #include "openauto/App.hpp"
 #include "openauto/Configuration/Configuration.hpp"
 #include "openauto/Configuration/IConfiguration.hpp"
@@ -21,19 +22,19 @@
 #include "openauto/Service/AndroidAutoEntityFactory.hpp"
 #include "openauto/Service/ServiceFactory.hpp"
 
-class OpenAutoWorker : public QObject {
+class OpenAuto : public Worker {
     Q_OBJECT
 
    public:
-    OpenAutoWorker(std::function<void(bool)> callback, bool night_mode, QWidget *frame);
-    ~OpenAutoWorker();
+    OpenAuto(std::function<void(bool)> callback, bool night_mode, QWidget *_frame);
+    ~OpenAuto();
 
     inline void start() { app->waitForDevice(true); }
-    inline void SetOpacity(unsigned int alpha) { serviceFactory.setOpacity(alpha); }
-    inline void UpdateSize() { serviceFactory.resize(); }
-    inline void SetNightMode(bool mode) { serviceFactory.setNightMode(mode); }
-    inline void SendKeyEvent(QKeyEvent *event) { serviceFactory.sendKeyEvent(event); }
-
+    inline void SetOpacity(unsigned int alpha) override { serviceFactory.setOpacity(alpha); }
+    inline void UpdateSize() override { serviceFactory.resize(); }
+    inline void SetNightMode(bool mode) override { serviceFactory.setNightMode(mode); }
+    inline void SendKeyEvent(QKeyEvent *event) override{ serviceFactory.sendKeyEvent(event); }
+    QWidget* Display() override;
    private:
     void createUsbWorkers();
     void createIOServiceWorkers();
@@ -54,69 +55,4 @@ class OpenAutoWorker : public QObject {
     std::vector<std::thread> threadPool;
 };
 
-class OpenAutoFrame : public QWidget {
-    Q_OBJECT
 
-   public:
-    OpenAutoFrame(QWidget *parent) : QWidget(parent) {}
-
-    inline bool IsFullscreen() { return fullscreen; }
-    inline void ToggleFullscreen() { fullscreen = !fullscreen; }
-
-   protected:
-    void mouseDoubleClickEvent(QMouseEvent *);
-    inline void enterEvent(QEvent *) { setFocus(); }
-
-   private:
-    bool fullscreen = false;
-
-   signals:
-    void doubleClicked(bool fullscreen);
-    void toggle(bool enable);
-};
-
-class OpenAutoView : public QStackedWidget {
-    Q_OBJECT
-
-   public:
-    OpenAutoView(QWidget *parent = nullptr);
-
-    inline void PassKeyEvent(QKeyEvent *event) { worker->SendKeyEvent(event); }
-
-   protected:
-    void resizeEvent(QResizeEvent *event);
-
-   private:
-    class Settings : public QWidget {
-       public:
-        Settings(QWidget *parent = nullptr);
-
-       private:
-        QWidget *settingsWidget();
-        QBoxLayout *rhdRowWidget();
-        QBoxLayout *frameRateRowWidget();
-        QBoxLayout *resolutionRowWidget();
-        QBoxLayout *dpiRowWidget();
-        QBoxLayout *dpiWidget();
-        QBoxLayout *rtAudioRowwidget();
-        QBoxLayout *audioChannelsRowWidget();
-        QBoxLayout *bluetoothRowWidget();
-        QBoxLayout *touchscreenRowWidget();
-        QCheckBox *buttonCheckbox(QString name, QString key, aasdk::proto::enums::ButtonCode::Enum code);
-        QBoxLayout *buttonsRowWidget();
-
-        Bluetooth *bluetooth;
-        Config *config;
-        Theme *theme;
-    };
-
-    QWidget *connectMsg();
-
-    Config *config;
-    Theme *theme;
-    OpenAutoFrame *frame;
-    OpenAutoWorker *worker;
-
-   signals:
-    void toggleFullscreen(QWidget *widget);
-};

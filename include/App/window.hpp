@@ -15,6 +15,7 @@
 #include "Views/openauto.hpp"
 #include <Views/obdview.hpp>
 #include "App/theme.hpp"
+#include <App/View.hpp>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -35,8 +36,9 @@ class MainWindow : public QMainWindow {
     Theme *theme;
     Shortcuts *shortcuts;
 
-    OpenAutoView *openauto;
-    OBDView* obdview;
+    View* openauto;
+    OpenAuto* openautoWorker;
+    View* obdview;
     QStackedWidget *stack;
     QVBoxLayout *rail;
     QButtonGroup *railGroup;
@@ -47,7 +49,7 @@ class MainWindow : public QMainWindow {
     void initTheme();
     void initUI();
     void initShortcuts();
-    QLayout *body();
+    QLayout* body();
     void addPages();
     void addPage(QString name, QWidget *page, QString icon);
 

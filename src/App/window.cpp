@@ -17,9 +17,13 @@ MainWindow::MainWindow()
 
     initTheme();
     initConfig();
-
-    openauto = new OpenAutoView(this);
-    obdview = new OBDView(this);
+    openauto = new View(this);
+    Frame* openautoFrame = openauto->GetFrame();
+    std::function<void(bool)> callback = [frame = openautoFrame](bool active) { frame->toggle(active); };
+    
+    openautoWorker = new OpenAuto(callback, theme->Mode, openautoFrame);
+    openauto->SetWorker(openautoWorker);
+    obdview = new View(this);
     stack = new QStackedWidget(this);
     rail = new QVBoxLayout();
     railGroup = new QButtonGroup(this);
@@ -28,8 +32,8 @@ MainWindow::MainWindow()
 
     connect(railGroup, QOverload<int, bool>::of(&QButtonGroup::buttonToggled),
             [this](int id, bool) { pages->setCurrentIndex(id); });
-    connect(openauto, &OpenAutoView::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
-    connect(obdview, &OBDView::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
+    connect(openauto, &View::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
+    connect(obdview, &View::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
     connect(config, &Config::scaleChanged, [theme = theme](double scale) { theme->Scale(scale); });
     connect(config, &Config::pageChanged,
             [railGroup = railGroup, pages = pages](QWidget *page, bool enabled) {
