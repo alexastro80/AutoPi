@@ -23,7 +23,12 @@ MainWindow::MainWindow()
     
     openautoWorker = new OpenAuto(callback, theme->Mode, openautoFrame);
     openauto->SetWorker(openautoWorker);
+    std::cout << "OBD View\n";
     obdview = new View(this);
+    Frame* obdFrame = obdview->GetFrame();
+    obdWorker = new OBDWorker(obdFrame);
+    
+    
     stack = new QStackedWidget(this);
     rail = new QVBoxLayout();
     railGroup = new QButtonGroup(this);

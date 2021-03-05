@@ -1,0 +1,11 @@
+#include <Widgets/CenterIndicator.hpp>
+
+
+CenterIndicator::CenterIndicator(QWidget* parent = nullptr)
+	void SetPosition(int x, int y);
+	void SetSize(int h, int w);
+	void SetTopLabel(const QString& label);
+	void SetCenterLabel(const QString& label);
+	void SetBottomLabel(const QString& label);
+	void Update(double value);
+	void Draw();

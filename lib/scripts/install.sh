@@ -2,11 +2,15 @@ git submodule update --recursive --init
 
 #python installation
 pip install pyAutoGui
+pip install pint
 pip3 install pyAutoGui
+pip3 install pint
+pwd
 DIR="$( dirname "$0" )"
-PYTHON_DIR="/home/pi/.local/lib/python2.7/site-packages"
-# Copy python OBD
-cp -rv $DIR/../../python-OBD/obd $PYTHON_DIR 
+
+sudo pip install --prefix /usr/local -e $DIR/../../python-OBD/
+sudo pip3 install --prefix /usr/local -e $DIR/../../python-OBD/
+ 
 
 dependencies=(
 "alsa-utils"
@@ -60,5 +64,5 @@ sudo apt-get upgrade
     
 
 
-./Build/buildAll.sh
+./build/buildAll.sh
 	

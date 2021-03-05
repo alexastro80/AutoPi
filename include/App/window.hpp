@@ -39,6 +39,7 @@ class MainWindow : public QMainWindow {
     View* openauto;
     OpenAuto* openautoWorker;
     View* obdview;
+    OBDWorker* obdWorker;
     QStackedWidget *stack;
     QVBoxLayout *rail;
     QButtonGroup *railGroup;

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 //     system("./lib/scripts/Input/input.sh &");
           
      //Launch OBD.py
-     //system("./lib/scripts/OBD/obd.sh &");
+//     system("./lib/scripts/OBD/obd.sh &");
      
      splash.setPixmap(QPixmap(":/splash.png").scaled(size, Qt::KeepAspectRatio));
      splash.show();
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
      window.setWindowIcon(QIcon(":/logo.png"));
      window.setWindowFlags(Qt::FramelessWindowHint);
      if (!use_fixed_size)
-         window.setWindowState(Qt::WindowFullScreen);
+ //        window.setWindowState(Qt::WindowFullScreen);
 
      // force to either screen or custom size
      window.setFixedSize(size);

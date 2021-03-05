@@ -1,11 +1,28 @@
 #ifndef OBD_VIEW_HPP
 #define OBD_VIEW_HPP
 
-#include <QtWidgets>
 #include <thread>
-#include "App/config.hpp"
-#include "App/bluetooth.hpp"
-#include "App/theme.hpp"
+#include <QtWidgets>
+#include <QUdpSocket>
+#include <QNetworkDatagram>
+
+#include <App/config.hpp>
+#include <App/bluetooth.hpp>
+#include <App/theme.hpp>
+#include <Widgets/CenterIndicator.hpp>
+
+#define RPM_CODE         0x0C
+#define SPEED_CODE       0x0D
+#define RUN_TIME_CODE    0x1F
+#define FUEL_RATE_CODE   0x5E
+#define FUEL_LEVEL_CODE  0x2F
+#define ODO_CODE         0x21     
+
+#define NUM_WIDGETS 20
+
+
+
+class OBDWorker;
 
 class OBDFrame : public QWidget 
 {
@@ -34,7 +51,6 @@ class OBDView : public QStackedWidget
     Q_OBJECT
 public:
     OBDView(QWidget *parent = nullptr);
-
 //    inline void PassKeyEvent(QKeyEvent *event) { worker->SendKeyEvent(event); }
 
    protected:
@@ -66,13 +82,62 @@ public:
 
     QWidget *connectMsg();
 
-    Config *config;
-    Theme *theme;
-    OBDFrame *frame;
-//    OpenAutoWorker *worker;
+    Config *config = nullptr;
+    Theme *theme = nullptr;
+    OBDFrame *frame = nullptr;
+    OBDWorker *worker = nullptr;
 
    signals:
     void toggleFullscreen(QWidget *widget);
 
 };
+
+
+class OBDWorker : public QObject
+{
+    Q_OBJECT
+public:
+    OBDWorker(QWidget* _frame);
+    ~OBDWorker();
+    void UpdateSize();
+    QWidget* Display();
+//    OBDData RequestData();
+
+    enum WidgetEnum {
+        centerLabel = 0,
+        topLabel,
+        bottomLabel1,
+        bottomLabel2,
+        centerGauge,
+        leftGauge,
+        rightGauge,
+        leftLabels,
+        rightLabels = 16,
+        max = NUM_WIDGETS};
+
+public slots:
+    void update();
+    void recvDatagram();
+    
+private:
+    void getValue(char code);
+
+    QUdpSocket* mySocket  = nullptr;
+    std::vector<QByteArray> packets;
+    
+    char widgetMap[NUM_WIDGETS];
+    QWidget* displayWidget = nullptr;
+    QVBoxLayout* displayLayout = nullptr;
+    QWidget* parent = nullptr;
+    QTimer* updateTimer = nullptr;
+    QLabel* topIndicator = nullptr;
+    QLabel* bottomIndicator1 = nullptr;
+    QLabel* bottomIndicator2 = nullptr;
+    CenterIndicator* centerIndicator = nullptr;
+
+    const int myPort = 2223;
+    const int serverPort = 2222;
+};
+
+
 #endif

@@ -1,4 +1,4 @@
 #!/bin/sh
 
 DIR="$( dirname "$0" )"
-sudo python3 $DIR/OBD.py
+python $DIR/obdServer.py 2222
