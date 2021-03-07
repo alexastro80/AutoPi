@@ -1,4 +1,9 @@
-set (OMX_DIR /opt/vc/)
+MESSAGE(STATUS "System Processor: " CMAKE_SYSTEM_PROCESSOR)
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "AARM64")
+    set (OMX_DIR /usr/)
+else()
+    set (OMX_DIR /opt/vc/)
+endif()
 
 find_path(BCM_HOST_INCLUDE_DIR
     bcm_host.h
