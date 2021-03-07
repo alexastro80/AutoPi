@@ -64,7 +64,7 @@ def main(args):
     if (not DEBUG):
         response = connection.query(obd.commands.RPM)
     else:
-        response = Length(3000, METER)
+        response = 3000 * ureg.meter
     if not response.is_null():
         print(response.value)
     while ((not response.is_null()) and response.value.magnitude > 300 or DEBUG):
@@ -80,7 +80,7 @@ def main(args):
                 if (not DEBUG):
                     response = connection.command[1][codeNum]
                 else:
-                    response = Length(15.56,METER)
+                    response = 15.56 * ureg.meter
                 if (not response.is_null):
                     if (len(response) == 1):
                         #Query was for a specific value
@@ -95,7 +95,7 @@ def main(args):
         if (not DEBUG):
             response = connection.query(obd.commands.RPM)
         else:
-           response = Length(3000, METER)
+           response = 3000 * ureg.meter
         if not response.is_null():
             print(response.value)
     print("Car turned off")
