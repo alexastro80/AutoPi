@@ -19,6 +19,9 @@ set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
+set(OPENAUTO_INCLUDE_DIR ${base_directory}/openauto/include)
+set(OPENAUTO_LIB_DIR ${base_directory}/openauto/lib)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 SET(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} -rdynamic)

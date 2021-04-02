@@ -1,4 +1,4 @@
-set (OPENAUTO_DIR ~/openauto)
+set (OPENAUTO_DIR ../openauto)
 
 find_path(OPENAUTO_INCLUDE_DIR
     OpenautoLog.hpp

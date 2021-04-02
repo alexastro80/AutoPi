@@ -8,3 +8,5 @@ cd build
 cmake -DGST_BUILD=true ../
 make
 sudo make install
+
+

@@ -1,4 +1,4 @@
-set (AASDK_DIR ~/aasdk)
+set (AASDK_DIR ../aasdk)
 
 find_path(AASDK_INCLUDE_DIR
     aasdk/Version.hpp
