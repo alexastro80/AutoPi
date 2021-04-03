@@ -39,11 +39,11 @@ def getInput():
     else:
         value = 0 << 3
     xVal = int(((joyX.value+xAdjustment)*6)/(maxVal)) + 1
-    print("x "+ str(xVal))
+    #print("x "+ str(xVal))
     value |= (int(((joyX.value+xAdjustment)*6)/(maxVal)) + 1)
     value = value << 3
     yVal = int(((joyY.value+yAdjustment)*6)/(maxVal)) + 1
-    print("y "+ str(yVal))
+    #print("y "+ str(yVal))
     value |= int(((joyY.value+yAdjustment)*6)/(maxVal)) + 1
     return value
     
@@ -73,7 +73,7 @@ def getIndividualState(value):
 
 def checkDouble(thisState, lastState):
     global x
-    print(thisState)
+    #print(thisState)
     if(x == 0 or x == 1): return False
     elif(x >= COUNT_MAX):
         x = 0
@@ -138,6 +138,6 @@ def main():
             thisVal = 0
         time.sleep(0.05)
         lastState = thisState
-        print(thisState)
+        #print(thisState)
         x = 0
 main()
