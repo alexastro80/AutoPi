@@ -7,44 +7,78 @@ import time
 import os
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
-def double(case, val, count, timer, key, index):
-    if(case[index] and count[index] == 1
-            and timer[index] != dTimerConst and timer[index] > 0):
-        val[index] = 0
-        pyautogui.press(key[index])
-        count[index] = 0
-        timer[index] = 0
-    elif(count[index] != 2):
-        count[index] += 1
-        timer[index] = dTimerConst
-    elif(timer[index] > 0):
-        timer[index] -= 1
-    else:
-        timer[index] = 0
-        count[index] = 0
-
+ 
 # constants
 maxVal = 65536
-jConstant = 5
+yAdjustment = 4000
+xAdjustment = 5000
+POSITIVE_BIT = 0x06
 
-pConstant = 100
-swConstant = 300
-dTimerConst = 10
-rightConst = 6
-leftConst = 6
-upConst = 10
-downConst = 20
-xConst = 6 #Deadzone x
-yConst = 6 #Deadzone y
-leftBound = int(maxVal/xConst)
-rightBound = int((xConst - 1)*maxVal/xConst)
-upBound = int(maxVal/yConst)
-downBound = int((yConst - 1)*maxVal/yConst)
-#doubles: up, down, left, right, press
-timers = [0, 0, 0, 0, 0]
-counters = [0, 0, 0, 0, 0]
-keys = ['b', 'b', 'v', 'n', 'h']
+X_VAL_BITS = 0x38
+Y_VAL_BITS = 0x07
+SWITCH_BIT = 0X40
 
+UPPER_LOWER = 0x04
+STATE_SIZE = 2
+upperVal = 0x04
+
+global x
+x = 0
+#States
+DRAG = 0x1F
+PRESS = 0x10
+LEFT = 0x08
+RIGHT = 0x04
+UP = 0x02
+DOWN = 0x01
+
+def getInput():
+    #Convert boolean to integer and shift
+    if(not switch.value):
+        value = 1 << 3
+    else:
+        value = 0 << 3
+    xVal = int(((joyX.value+xAdjustment)*6)/(maxVal)) + 1
+    print("x "+ str(xVal))
+    value |= (int(((joyX.value+xAdjustment)*6)/(maxVal)) + 1)
+    value = value << 3
+    yVal = int(((joyY.value+yAdjustment)*6)/(maxVal)) + 1
+    print("y "+ str(yVal))
+    value |= int(((joyY.value+yAdjustment)*6)/(maxVal)) + 1
+    return value
+    
+def getJoyState(value):
+    xVal = (value & X_VAL_BITS) >> 3
+    yVal = value & Y_VAL_BITS
+    if(value & SWITCH_BIT > 0):
+        state = 1 << STATE_SIZE
+    else: state = 0
+
+    state |= getIndividualState(xVal)
+    state = state << STATE_SIZE
+    state |= getIndividualState(yVal)
+    return state;
+    
+def getIndividualState(value):
+    tempVal = (value & UPPER_LOWER)
+    state = (~(value & UPPER_LOWER))
+    if((value & UPPER_LOWER > 0)):
+        state = 0
+    else: state = 1
+    state = state << 1
+    if (value > UPPER_LOWER):
+        state |= 1
+
+    return state
+
+def checkDouble(thisState, lastState):
+    global x
+    print(thisState)
+    if(x == 0 or x == 1): return False
+    elif(x >= COUNT_MAX):
+        x = 0
+        return False
+    else: return (thisState == lastState)
 
 #Setup
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -52,99 +86,58 @@ cs = digitalio.DigitalInOut(board.CE0)
 mcp = MCP.MCP3008(spi, cs)
 
 pyautogui.FAILSAFE = False
-joySW = AnalogIn(mcp, MCP.P0)
+
+switch = digitalio.DigitalInOut(board.D25)
+switch.direction = digitalio.Direction.INPUT
+switch.pull = digitalio.Pull.UP
+
 joyY = AnalogIn(mcp, MCP.P1)
 joyX = AnalogIn(mcp, MCP.P2)
-photo = AnalogIn(mcp, MCP.P3)
+photo = AnalogIn(mcp, MCP.P0)
 
-swCounter = 0
-swThresh = 1
-swDrag = 4
-while True:
-    # deadzone
-    # X Axisb
-    Xval = joyX.value
-    if(Xval > rightBound):
-        Xval = int(((Xval - rightBound)/(maxVal - rightBound))*jConstant)
-        Xval = 1.5*(Xval * Xval) + Xval/2
-    elif(Xval < leftBound):
-        Xval = int(((leftBound-Xval)/leftBound)*jConstant)
-        Xval = 1.5*(Xval * Xval) + Xval/2
-        Xval = Xval * -1
-    else:
-        Xval = 0
-#    print("Xval: "+ str(Xval))
-    #Y Axis
-    Yval = joyY.value
-    if(Yval > downBound):
-#        print(Yval)
-        Yval = int(((Yval - downBound)/(maxVal - downBound))*jConstant)
-        Yval = 1.5*(Yval * Yval) + Yval/2
-    elif(Yval < upBound):
-#        print(Yval)
-        Yval = int(((upBound-Yval)/upBound)*jConstant)
-        Yval = 1.5*(Yval * Yval) + Yval/2
-        Yval = Yval * -1
-    else:
-        Yval = 0
- #   print("Yval: "+ str(Yval))
-    #cases
-    up = (Yval < 0)
-    down = (Yval > 0)
-    left = (Xval < 0)
-    right = (Xval > 0)
-    press = (joySW.value < swConstant)
+COUNT_MAX = 300
+def main():
+    thisState = 0
+    lastState = 0
+    global x
+    doubleAction = False
+    joyYScale = 2.75
+    joyXScale = 2.75
+    while True:
+        thisVal = getInput()
 
-    values = [Yval, Yval, Xval, Xval, press]
-    cases = [up, down, left, right, press]
+        if(thisVal == 36):
+            x += 1
+            continue
+        thisState = getJoyState(thisVal)
 
-
-    if((up or down) ^ (left or right) ^ press):
-        i = 0
-        if(up):
-            #print("up")
-            double(cases, values, counters, timers, keys, 0)
-            yVal = values[0]
-        elif(down):
-            #print("down")
-            double(cases, values, counters, timers, keys, 1)
-            yVal = values[1]
-        elif(left):
-            #print("left")
-            double(cases, values, counters, timers, keys, 2)
-            xVal = values[2]
-        elif(right):
-            #print("right")
-            double(cases, values, counters, timers, keys, 3)
-            xVal = values[3]
-        elif(press):
-            #print("pressed")
-            double(cases, values, counters, timers, keys, 4)
-            press = values[4]
-    else:
-        timers[0] -= 1
-        timers[1] -= 1
-        timers[2] -= 1
-        timers[3] -= 1
-        timers[4] -= 1
-    lightVal = pConstant - photo.value*(pConstant/maxVal)
-    if(swCounter < swDrag):
-        pyautogui.moveRel(Xval,Yval, duration = 0)
-    if(press):
-        if(swCounter < swThresh):
-            pyautogui.click()
+        doubleAction = checkDouble(thisState, lastState)
+        
+        #ACT
+        
+        if(not doubleAction):
+            #Normal Action
+            if((thisState & PRESS) > 0):
+               pyautogui.click()
+            elif((thisState & DRAG) > PRESS):
+                xVal = (pow(((thisVal & X_VAL_BITS) >> 3),2)-16) * joyXScale
+                yVal = (pow((thisVal & Y_VAL_BITS),2)-16) * joyYScale
+                pyautogui.dragRel(xVal,yVal, duration = 0)
+            else:
+               xVal = (pow(((thisVal & X_VAL_BITS) >> 3),2)-16) * joyXScale
+               yVal = (pow((thisVal & Y_VAL_BITS),2)-16) * joyYScale
+               pyautogui.moveRel(xVal,yVal,duration = 0)
+               
         else:
-            pyautogui.dragRel(Xval,Yval, duration = 0)
-        swCounter += 1
-    else:
-        swCounter = 0
-
-    #print(pyautogui.position())
-
-
-
-    #print("Values")
-    #print('Joy Switch: ', joySW.value < 1)
-    #print('Joy Y-axis: ', yVal)
-    #print('Joy X-axis: ', xVal)
-    #print('Photo: ', lightVal)
+            if (thisState == PRESS): pyautogui.press('a')
+            elif(thisState == LEFT): pyautogui.press('b')
+            elif(thisState == RIGHT):pyautogui.press('c')
+            elif(thisState == UP): pyautogui.press('d')
+            elif(thisState == DOWN): pyautogui.press('e')
+            thisState = 0
+            thisVal = 0
+        time.sleep(0.05)
+        lastState = thisState
+        print(thisState)
+        x = 0
+main()
