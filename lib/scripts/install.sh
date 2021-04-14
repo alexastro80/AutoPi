@@ -99,7 +99,49 @@ ${installString}
 
 sudo apt-get upgrade
     
+if [[ $? -eq 0 ]]; then
+      echo -e Dash make ok, executable can be found ../bin/dash
+      echo
 
+      #check and add usb rules for openauto if they dont exist
+      echo Checking if permissions exist
+      #udev rule to be created below, change as needed
+      FILE=/etc/udev/rules.d/51-dashusb.rules
+      if [[ ! -f "$FILE" ]]; then
+          # OPEN USB RULE, CREATE MORE SECURE RULE IF REQUIRED
+          echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"*\", ATTR{idProduct}==\"*\", MODE=\"0660\", GROUP=\"plugdev\"" | sudo tee $FILE
+        if [[ $? -eq 0 ]]; then
+            echo -e Permissions created'\n'
+          else
+            echo -e Unable to create permissions'\n'
+        fi
+        else
+          echo -e Rules exists'\n'
+      fi
+    else
+      echo Dash make failed with error code $?
+      exit 1
+ fi
+
+
+#Setting openGL driver and GPU memory to 256mb
+if $isRpi; then
+	sudo raspi-config nonint do_memory_split 256
+	if [[ $? -eq 0 ]]; then
+		echo -e Memory set to 256mb'\n'
+		else
+		echo Setting memory failed with error code $? please set manually
+		exit 1
+	fi
+
+	sudo raspi-config nonint do_gldriver G2
+	if [[ $? -eq 0 ]]; then
+		echo -e OpenGL set ok'\n'
+		else
+		echo Setting openGL failed with error code $? please set manually
+		exit 1
+	fi
+fi
 
 ./build/buildAll.sh
 	
