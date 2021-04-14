@@ -11,41 +11,8 @@ DIR="$( dirname "$0" )"
 sudo pip install --prefix /usr/local -e $DIR/../../python-OBD/
 sudo pip3 install --prefix /usr/local -e $DIR/../../python-OBD/
 
-
-#run cmake
-echo Beginning cmake
-cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH) -DCMAKE_INSTALL_INCLUDEDIR=include -DQT_VERSION=5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-std=c++11
-
-if [[ $? -eq 0 ]]; then
-echo -e Make ok'\n'
-else
-echo Gstreamer CMake failed
-exit 1
-fi
-
-echo Making Gstreamer
-make -j4
-
-if [[ $? -eq 0 ]]; then
-echo -e Gstreamer make ok'\n'
-else
-echo Make failed with error code $?
-exit 1
-fi
-
-#run make install
-echo Beginning make install
-sudo make install
-
-if [[ $? -eq 0 ]]; then
-echo -e Gstreamer installed ok'\n'
-else
-echo Gstreamer make install failed with error code $?
-exit 1
-fi
-
 sudo ldconfig
-cd ../../AutoPi/lib/scripts/
+cd $DIR
 
 dependencies=(
 "alsa-utils"
@@ -100,13 +67,13 @@ ${installString}
 sudo apt-get upgrade
     
 if [[ $? -eq 0 ]]; then
-      echo -e Dash make ok, executable can be found ../bin/dash
+      echo -e AutoPi make ok, executable can be found ../bin/dash
       echo
 
       #check and add usb rules for openauto if they dont exist
       echo Checking if permissions exist
       #udev rule to be created below, change as needed
-      FILE=/etc/udev/rules.d/51-dashusb.rules
+      FILE=/etc/udev/rules.d/51-autoPiusb.rules
       if [[ ! -f "$FILE" ]]; then
           # OPEN USB RULE, CREATE MORE SECURE RULE IF REQUIRED
           echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"*\", ATTR{idProduct}==\"*\", MODE=\"0660\", GROUP=\"plugdev\"" | sudo tee $FILE
@@ -119,7 +86,7 @@ if [[ $? -eq 0 ]]; then
           echo -e Rules exists'\n'
       fi
     else
-      echo Dash make failed with error code $?
+      echo AutoPi make failed with error code $?
       exit 1
  fi
 
