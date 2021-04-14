@@ -7,3 +7,6 @@
 [submodule "aasdk"]
 	path = aasdk
 	url = https://github.com/openDsh/aasdk.git
+[submodule "qt-gstreamer"]
+	path = qt-gstreamer
+	url = git://anongit.freedesktop.org/gstreamer/qt-gstreamer
