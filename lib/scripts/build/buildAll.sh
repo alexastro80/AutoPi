@@ -1,5 +1,10 @@
 DIR="$( dirname "$0" )"
 echo $DIR
+
+echo "Building GSTREAMER. . ."
+chmod +x $DIR/buildGStreamer.sh
+$DIR/buildGStreamer.sh
+
 echo "Building AASDK. . ."
 chmod +x $DIR/buildAASDK.sh
 $DIR/buildAASDK.sh
