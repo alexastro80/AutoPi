@@ -3,13 +3,20 @@ git submodule update --recursive --init
 #python installation
 pip install pyAutoGui
 pip install pint
+
 pip3 install pyAutoGui
 pip3 install pint
+pip3 install adafruit-blinka
+pip3 install adafruit_mcp3xxx
+
 pwd
 DIR="$( dirname "$0" )"
 
-sudo pip install --prefix /usr/local -e $DIR/../../python-OBD/
-sudo pip3 install --prefix /usr/local -e $DIR/../../python-OBD/
+#pip install --prefix /usr/local -e $DIR/../../python-OBD/obd
+#pip3 install --prefix /usr/local -e $DIR/../../python-OBD/
+
+sudo cp -r -v $DIR/../../python-OBD/obd /usr/local/lib/python2.7/dist-packages/
+sudo cp -r -v $DIR/../../python-OBD/obd /usr/local/lib/python3.7/dist-packages/
 
 sudo ldconfig
 cd $DIR
