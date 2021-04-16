@@ -7,7 +7,7 @@ import time
 import os
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
- 
+import math
 # constants
 maxVal = 65536
 yAdjustment = 4000
@@ -35,22 +35,20 @@ DOWN = 0x01
 def getInput():
     #Convert boolean to integer and shift
     if(not switch.value):
-        value = 1 << 3
+        value = 1 << 6
     else:
-        value = 0 << 3
-    xVal = int(((joyX.value+xAdjustment)*6)/(maxVal)) + 1
+        value = 0 << 6
+    xVal = int(3*(1-math.cos((math.pi/maxVal)*(joyX.value+xAdjustment)))) + 1
     #print("x "+ str(xVal))
-    value |= (int(((joyX.value+xAdjustment)*6)/(maxVal)) + 1)
-    value = value << 3
-    yVal = int(((joyY.value+yAdjustment)*6)/(maxVal)) + 1
-    #print("y "+ str(yVal))
-    value |= int(((joyY.value+yAdjustment)*6)/(maxVal)) + 1
+    yVal = int(3*(1-math.cos((math.pi/maxVal)*(joyY.value+yAdjustment)))) + 1
+    value |= (xVal << 3) | (yVal)
+    #print(value)
     return value
     
 def getJoyState(value):
     xVal = (value & X_VAL_BITS) >> 3
     yVal = value & Y_VAL_BITS
-    if(value & SWITCH_BIT > 0):
+    if((value & SWITCH_BIT) > 0):
         state = 1 << STATE_SIZE
     else: state = 0
 
@@ -101,8 +99,8 @@ def main():
     lastState = 0
     global x
     doubleAction = False
-    joyYScale = 2.75
-    joyXScale = 2.75
+    joyYScale = 3.75
+    joyXScale = 3.75
     while True:
         thisVal = getInput()
 
@@ -110,7 +108,7 @@ def main():
             x += 1
             continue
         thisState = getJoyState(thisVal)
-
+        #print(thisState)
         doubleAction = checkDouble(thisState, lastState)
         
         #ACT
