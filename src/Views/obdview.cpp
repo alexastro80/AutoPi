@@ -137,12 +137,17 @@ OBDWorker::OBDWorker(QWidget* _parent) : QObject(qApp)
     mySocket->writeDatagram(message);
     
     for(int i = 0; i < NUM_WIDGETS; i++) widgetMap[i] = 0;
-    //Setup WidgetMap
-    widgetMap[WidgetEnum::topLabel] = RUN_TIME_CODE;
-    widgetMap[WidgetEnum::centerLabel] = SPEED_CODE;
-    widgetMap[WidgetEnum::bottomLabel1] = FUEL_RATE_CODE;
-    widgetMap[WidgetEnum::bottomLabel2] = ODO_CODE;
+    for(int i = 0; i < NUM_CODES; i++) codeMap[i] = -1;
+    //Setup Widget Code Relationship (1:1)
+    setCodeWidgetRelationship(WidgetEnum::topLabel, RUN_TIME_CODE);
+    setCodeWidgetRelationship(WidgetEnum::centerLabel, SPEED_CODE);
+    setCodeWidgetRelationship(WidgetEnum::bottomLabel1, FUEL_RATE_CODE);
+    setCodeWidgetRelationship(WidgetEnum::bottomLabel2, ODO_CODE);
     
+    for(int i = 0; i < NUM_WIDGETS; i++) std::cout << widgetMap[i] << " ";
+
+    std::cout << "\n";
+
     updateTimer = new QTimer(this);
     connect(updateTimer, SIGNAL(timeout()),this, SLOT(update()));
     updateTimer->start(200);
@@ -212,8 +217,9 @@ void OBDWorker::recvDatagram()
         QByteArray buffer;
         buffer.resize(mySocket->pendingDatagramSize());
         mySocket->readDatagram(buffer.data(), buffer.size());
+//        std::cout << "Buffer size: " << buffer.size() << "\n";
         packets.push_back(buffer);
-        std::cout << buffer.toStdString();
+//        std::cout << buffer.toStdString();
     }
 }
 
@@ -224,39 +230,52 @@ void OBDWorker::update()
         //Update the GUI
         for (auto packet : packets)
         {
-            if(packet.at(0) == (char)1)
+        	if (packet.size() < 11) continue;
+        	std::cout << "Processing Packet:\n";
+        	char* bytes = packet.data();
+        	char data_type = *bytes++;
+        	std::cout << "Data Type: " << (int) data_type << "\n";
+            if(data_type == 0x01)
             {//Value packet
-                for (int i = 0; i < NUM_WIDGETS; i++)
-                {
-                    if(widgetMap[i] == packet[1])
-                    {
-                        double* value = (double*)(packet.data()+1);
-                        if (value == nullptr) return;
-                        switch (i)
-                        {
-                        case WidgetEnum::bottomLabel1:
-                            bottomIndicator1->setText(QString::number(*value, 'f', 1));
-                            break;
-                        case WidgetEnum::bottomLabel2:
-                            bottomIndicator2->setText(QString::number(*value, 'f', 1));
-                            break;
-                        case WidgetEnum::centerLabel:
-                            centerIndicator->SetCenterLabel(QString::number(*value, 'f', 3));
-                            break;
-                        case WidgetEnum::topLabel:
-                            topIndicator->setText(QString::number(*value, 'f', 1));  
-                            break; 
-                        }    
-                    }     
-                }      
+            	std::cout << "Value Packet\n";
+
+				char valueType = *bytes++;
+				int bigEndian = 0;
+
+				char valueMem[8];
+				if (bigEndian == 1)
+					for (int i = 13; i >= 6; i--) valueMem[13-i] = bytes[i];
+				else
+					for (int i = 6; i < 14; i++) valueMem[i-6] = bytes[i];
+
+				//for (int i = 0; i < 8; i++) std::cout << (int) valueMem[i] << ",";
+				double value = 0;
+				memcpy(&value, valueMem, sizeof (value));
+				std::cout << "\nValue: " << value << "\n";
+				int widgetIndex = codeMap[valueType];
+				switch (widgetIndex)
+				{
+				case WidgetEnum::bottomLabel1:
+					bottomIndicator1->setText(QString::number(value, 'f', 1));
+					break;
+				case WidgetEnum::bottomLabel2:
+					bottomIndicator2->setText(QString::number(value, 'f', 1));
+					break;
+				case WidgetEnum::centerLabel:
+					centerIndicator->SetCenterLabel(QString::number(value, 'f', 2));
+					break;
+				case WidgetEnum::topLabel:
+					topIndicator->setText(QString::number(value, 'f', 1));
+					break;
+				}
             }
-            else if (packet.at(0) == (char)3)
+            else if (data_type == 0x03)
             {//Status packet
                 
             }
-            packets.clear();
+
         }
-        
+        packets.clear();
     }
     else 
     {
@@ -269,9 +288,18 @@ void OBDWorker::update()
 
 inline void OBDWorker::getValue(char code)
 {   
-    double x = 0.;
-    int CODE_LEN = 1 + sizeof(x);
-    char packet[CODE_LEN] = {2,code};
+    int CODE_LEN = 1;
+    char packet[] = {2,code};
     QByteArray message(packet);
     mySocket->writeDatagram(message, QHostAddress::LocalHost, serverPort);
+}
+
+inline void OBDWorker::setCodeWidgetRelationship(int widget, char code)
+{
+	if ((widget < NUM_WIDGETS && widget > -1)
+			&& code < NUM_CODES)
+	{
+		widgetMap[widget] = code;
+		codeMap[code] = widget;
+	}
 }

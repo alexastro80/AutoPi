@@ -17,24 +17,24 @@ int main(int argc, char *argv[])
          size = QSize(args.at(1).toInt(), args.at(2).toInt());
      system("pwd");
      //Launch input if necessary
-//     system("./lib/scripts/Input/input.sh &");
+     system("./lib/scripts/Input/input.sh &");
           
      //Launch OBD.py
-//     system("./lib/scripts/OBD/obd.sh &");
+     //system("./lib/scripts/OBD/obd.sh &");
      
      splash.setPixmap(QPixmap(":/splash.png").scaled(size, Qt::KeepAspectRatio));
      splash.show();
      autoPi.processEvents();
 
      MainWindow window;
-     window.setWindowIcon(QIcon(":/logo.png"));
-     window.setWindowFlags(Qt::FramelessWindowHint);
+     window.setWindowIcon(QIcon(":/logo.png")); // @suppress("Ambiguous problem")
+     window.setWindowFlags(Qt::FramelessWindowHint); // @suppress("Ambiguous problem")
      if (!use_fixed_size)
  //        window.setWindowState(Qt::WindowFullScreen);
 
      // force to either screen or custom size
-     window.setFixedSize(size);
-     window.show();
+     window.setFixedSize(size); // @suppress("Ambiguous problem")
+     window.show(); // @suppress("Ambiguous problem")
      splash.finish(&window);
      
      

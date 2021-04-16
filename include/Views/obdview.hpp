@@ -18,7 +18,8 @@
 #define FUEL_LEVEL_CODE  0x2F
 #define ODO_CODE         0x21     
 
-#define NUM_WIDGETS 20
+#define NUM_WIDGETS 4
+#define NUM_CODES	256
 
 
 
@@ -121,11 +122,16 @@ public slots:
     
 private:
     void getValue(char code);
+    void setCodeWidgetRelationship(int widget, char code);
 
     QUdpSocket* mySocket  = nullptr;
     std::vector<QByteArray> packets;
     
     char widgetMap[NUM_WIDGETS];
+    int codeMap[NUM_CODES];
+
+
+
     QWidget* displayWidget = nullptr;
     QVBoxLayout* displayLayout = nullptr;
     QWidget* parent = nullptr;
