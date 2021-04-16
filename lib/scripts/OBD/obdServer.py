@@ -86,7 +86,8 @@ def main(args):
             if (packetType == 2):
                 codeNum = ord(packet[1])
                 if (not DEBUG):
-                    response = connection.command[1][codeNum]
+                    cmd = obd.commands[1][codeNum]
+                    response = connection.query(cmd)
                 else:
                     response = OBDResponse()
                     response.value = (15.56 * ureg.meter)
