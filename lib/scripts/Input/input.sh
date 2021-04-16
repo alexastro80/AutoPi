@@ -2,6 +2,7 @@
 #More logic to select input method to come.
 DIR="$( dirname "$0" )"
 #Assuming usage of joystick
+cd $DIR
 ./pythonCheck.sh pyautogui
 response=$?
 echo $response
@@ -30,4 +31,4 @@ if [ $response = "1" ]; then
 	pip3 install Adafruit-PlatformDetect     
 	pip3 install Adafruit-PureIO
 fi
-sudo python3 $DIR/joystick.py
+python3 ./joystick.py
