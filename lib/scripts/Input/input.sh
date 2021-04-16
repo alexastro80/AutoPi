@@ -25,7 +25,7 @@ echo $response
 if [ $response = "1" ]; then
 	pip3 install adafruit-blinka   
 	pip3 install adafruit-circuitpython-busdevice      
-	pip3 installadafruit-circuitpython-mcp3xxx    
+	pip3 install adafruit-circuitpython-mcp3xxx    
 	pip3 install Adafruit-GPIO     
 	pip3 install Adafruit-MCP3008      
 	pip3 install Adafruit-PlatformDetect     
