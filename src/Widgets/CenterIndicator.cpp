@@ -1,6 +1,5 @@
 #include <Widgets/CenterIndicator.hpp>
 
-
 CenterIndicator::CenterIndicator(QWidget* parent) : QWidget(parent) 
 {	
 	if(parent != nullptr)
