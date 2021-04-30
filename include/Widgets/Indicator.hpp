@@ -11,6 +11,8 @@ public:
     virtual void SetValue(double value) = 0;
     double Max;
     double Min;
+    QColor ForegroundColor;
+    QColor BackgroundColor;
 
 
 protected:

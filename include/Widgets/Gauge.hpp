@@ -1,13 +1,15 @@
 #ifndef GAUGE_H
 #define GAUGE_H
 
-#include "indicator.h"
+#include <Widgets/Indicator.hpp>
+#include <Widgets/Paintable.hpp>
 #include <QtWidgets>
-class Gauge : public Indicator
+class Gauge : public Indicator, public Paintable
 {
 public:
     Gauge(QObject* parent, int x, int y);
     void SetValue(double Value) override;
+    void Paint(QPainter& painter) override;
     void Draw() {  update(); }
 
     bool DrawAll = true;
@@ -21,12 +23,10 @@ public:
     int RadiusLabel = 80;
     int RadiusInner = 30, RadiusOuter = 50;
     int X = 0, Y = 0;
-    QColor ForegroundColor = Qt::red,
-        BackgroundColor = Qt::gray,
-        LabelColor = Qt::black;
+    QColor LabelColor = Qt::black;
     QFont LableFont;
 protected:
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event) { QPainter painter(this); Paint(painter);}
 private:
     double lastValue = 0.0;
 };

@@ -1,6 +1,6 @@
 #include <Widgets/CenterIndicator.hpp>
 
-CenterIndicator::CenterIndicator(QWidget* parent) : QWidget(parent) 
+CenterIndicator::CenterIndicator(QWidget* parent) : Indicator(parent)
 {	
 	if(parent != nullptr)
 	{
@@ -19,6 +19,7 @@ CenterIndicator::CenterIndicator(QWidget* parent) : QWidget(parent)
 		_layout->addWidget(centerLabel);
 		_layout->addWidget(bottomLabel);
 		_layout->addStretch();
+		value = Min;
 	}
 }
 

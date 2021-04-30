@@ -1,4 +1,4 @@
-#include "Gauge.hpp"
+#include <Widgets/Gauge.hpp>
 #include <QObject>
 Gauge::Gauge(QObject* parent, int x, int y) : Indicator(parent)
 {
@@ -15,9 +15,9 @@ inline void Gauge::SetValue(double Value)
     DrawAll = tempDrawAll;
 }
 
-void Gauge::paintEvent(QPaintEvent* event)
+void Gauge::Paint(QPainter& painter)
 {
-    QPainter painter(this);
+
     double pi = 3.1415926;
     int flip = (ThetaStart < ThetaEnd) ? 1 : -1;
     if (DrawAll) {
@@ -74,5 +74,4 @@ void Gauge::paintEvent(QPaintEvent* event)
         int Y2 = RadiusInner*sin(thetaRad) + Y;
         painter.drawLine(X1, Y1, X2, Y2);
     }
-    painter.end();
 }

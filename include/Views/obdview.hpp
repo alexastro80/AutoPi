@@ -10,7 +10,7 @@
 #include <App/bluetooth.hpp>
 #include <App/theme.hpp>
 #include <Widgets/CenterIndicator.hpp>
-
+#include <Widgets/Gauge.hpp>
 #define RPM_CODE         0x0C
 #define SPEED_CODE       0x0D
 #define RUN_TIME_CODE    0x1F
@@ -105,15 +105,15 @@ public:
 //    OBDData RequestData();
 
     enum WidgetEnum {
-        centerLabel = 0,
-        topLabel,
-        bottomLabel1,
-        bottomLabel2,
-        centerGauge,
-        leftGauge,
-        rightGauge,
-        leftLabels,
-        rightLabels = 16,
+        CenterLabel = 0,
+        TopLabel,
+        BottomLabel1,
+        BottomLabel2,
+        CenterGauge,
+        LeftGauge,
+        RightGauge,
+        LeftLabels,
+        RightLabels = 16,
         max = NUM_WIDGETS};
 
 public slots:
@@ -139,6 +139,9 @@ private:
     QLabel* topIndicator = nullptr;
     QLabel* bottomIndicator1 = nullptr;
     QLabel* bottomIndicator2 = nullptr;
+
+    Gauge* centerGauge = nullptr;
+    Gauge* leftGauge = nullptr;
     CenterIndicator* centerIndicator = nullptr;
 
     const int myPort = 2223;
