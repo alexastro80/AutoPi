@@ -18,113 +18,7 @@
 #include <Widgets/Gauge.hpp>
 //#include <App/window.hpp>
 
-void OBDFrame::mouseDoubleClickEvent(QMouseEvent *)
-{
-    ToggleFullscreen();
-    emit doubleClicked(fullscreen);
-}
-
-OBDView::Settings::Settings(QWidget *parent) : QWidget(parent)
-{
-    bluetooth = Bluetooth::getInstance();
-    theme = Theme::getInstance();
-    config = Config::getInstance();
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(6, 0, 6, 0);
-
-    layout->addWidget(settingsWidget());
-}
-
-QWidget *OBDView::Settings::settingsWidget()
-{
-    QWidget *widget = new QWidget(this);
-    //QVBoxLayout *layout = new QVBoxLayout(widget);
-/*
-  layout->addLayout(rhdRowWidget(), 1);
-   layout->addWidget(Theme::Br(), 1);
- layout->addLayout(frameRateRowWidget(), 1);
-  layout->addLayout(resolutionRowWidget(), 1);
-   layout->addLayout(dpiRowWidget(), 1);
-    layout->addWidget(Theme::Br(), 1);
-    layout->addLayout(rtAudioRowwidget(), 1);
-    layout->addLayout(audioChannelsRowWidget(), 1);
-    layout->addWidget(Theme::Br(), 1);
-    layout->addLayout(bluetoothRowWidget(), 1);
-    layout->addWidget(Theme::Br(), 1);
-    layout->addLayout(touchscreenRowWidget(), 1);
-    layout->addLayout(buttonsRowWidget(), 1);
-*/
-    QScrollArea *scroll_area = new QScrollArea(this);
-    Theme::ToTouchScroller(scroll_area);
-    scroll_area->setWidgetResizable(true);
-    scroll_area->setWidget(widget);
-
-    return scroll_area;
-}
-
-
-
-OBDView::OBDView(QWidget *parent) : QStackedWidget(parent)
-{
-    config = Config::getInstance();
-    theme = Theme::getInstance();
-
-    frame = new OBDFrame(this);
-
-    std::cout << "OBD Worker\n";
-    worker = new OBDWorker(this);
-
-    connect(frame, &OBDFrame::toggle, [this](bool enable) {
-        if (!enable && frame->IsFullscreen()) {
-            addWidget(frame);
-            frame->ToggleFullscreen();
-        }
-        setCurrentIndex(enable ? 1 : 0);
-    });
-    connect(frame, &OBDFrame::doubleClicked, [this](bool fullscreen) {
-        if (fullscreen) {
-            emit toggleFullscreen(frame);
-        }
-        else {
-            addWidget(frame);
-            setCurrentWidget(frame);
-        }
-        worker->UpdateSize();
-    });
-//    connect(theme, &Theme::modeUpdated, [this](bool mode) { worker->SetNightMode(mode); });
-    addWidget(worker->Display());
- //   addWidget(connectMsg());
-    addWidget(frame);
-}
-
-void OBDView::resizeEvent(QResizeEvent *event)
-{
-    QWidget::resizeEvent(event);
-    frame->resize(size());
-    worker->UpdateSize();
-}
-
-QWidget *OBDView::connectMsg()
-{
-    QWidget *widget = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(widget);
-    layout->setContentsMargins(0, 0, 0, 0);
-
-    QLabel *label = new QLabel("connect device to start OBD", widget);
-    label->setAlignment(Qt::AlignCenter);
-
-    QHBoxLayout *layout2 = new QHBoxLayout();
-    layout2->setContentsMargins(0, 0, 0, 0);
-    layout2->setSpacing(0);
-    layout->addStretch();
-    layout->addWidget(label);
-    layout->addStretch();
-
-    return widget;
-}
-
-OBDWorker::OBDWorker(QWidget* _parent) : QObject(qApp)
+OBDWorker::OBDWorker(QWidget* _parent) : Worker()
 {
     parent = _parent;
 
@@ -188,10 +82,10 @@ OBDWorker::OBDWorker(QWidget* _parent) : QObject(qApp)
 */
     //displayLayout->addWidget(centerGauge);
     //displayLayout->addWidget(leftGauge);
-
+    centerLayout->addSpacerItem(new QSpacerItem(1,70));
     centerIndicator = new CenterIndicator(parent);
     centerLayout->addWidget(centerIndicator);
-    
+    centerLayout->addSpacerItem(new QSpacerItem(1,20));
     bottomIndicator1 = new QLabel("001340.0");
     bottomIndicator1->setAlignment(Qt::AlignCenter);
     centerLayout->addWidget(bottomIndicator1);
@@ -199,7 +93,44 @@ OBDWorker::OBDWorker(QWidget* _parent) : QObject(qApp)
     bottomIndicator2 = new QLabel("32.6 MPG");
     bottomIndicator2->setAlignment(Qt::AlignCenter);
     centerLayout->addWidget(bottomIndicator2);
-    
+    centerLayout->setContentsMargins(0, 200, 0, 250);
+
+
+    QPoint centerPoint = QGuiApplication::primaryScreen()->geometry().center();
+    int xCenter = centerPoint.x()+2;
+    int yCenter = centerPoint.y()-5;
+    std::cout << "X: " << xCenter;
+    std::cout << "\nY:" << yCenter;
+
+    centerGauge = new Gauge(parent,xCenter,yCenter);
+    centerGauge->RadiusOuter = 125;
+    centerGauge->RadiusInner = centerGauge->RadiusOuter - 40;
+    centerGauge->Max = 100;
+    centerGauge->DrawAll = false;
+    centerGauge->ThetaStart = 120;
+    centerGauge->ThetaEnd = 420;
+    centerGauge->SetValue(50);
+
+    leftGauge = new Gauge(parent,xCenter,yCenter);
+	leftGauge->RadiusInner = centerGauge->RadiusOuter + 10;
+	leftGauge->RadiusOuter = leftGauge->RadiusInner + 40;
+	leftGauge->Max = 100;
+	leftGauge->DrawAll = false;
+	leftGauge->ThetaStart = 120;
+	leftGauge->ThetaEnd = 240;
+	leftGauge->SetValue(50);
+
+	rightGauge = new Gauge(parent,xCenter,yCenter);
+	rightGauge->RadiusInner = centerGauge->RadiusOuter + 10;
+	rightGauge->RadiusOuter = leftGauge->RadiusInner + 40;
+	rightGauge->Max = 100;
+	rightGauge->DrawAll = false;
+	rightGauge->ThetaStart = 60;
+	rightGauge->ThetaEnd = -60;
+	rightGauge->SetValue(50);
+
+    if(parent != nullptr) parent->update();
+
 
     //displayLayout->addStretch();
 
@@ -211,6 +142,7 @@ void OBDWorker::UpdateSize()
         centerIndicator->SetValue(0.0);
         leftGauge->SetValue(leftGauge->Min);
         centerGauge->SetValue(centerGauge->Min);
+        if(parent != nullptr) parent->update();
     }
 }
 QWidget* OBDWorker::Display()
@@ -307,6 +239,7 @@ void OBDWorker::update()
             getValue(widgetMap[i]);
         }
     } 
+    if(parent != nullptr) parent->update();
 }
 
 inline void OBDWorker::getValue(char code)

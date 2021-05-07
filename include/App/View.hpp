@@ -15,6 +15,7 @@ public:
     inline void PassKeyEvent(QKeyEvent *event) { worker->SendKeyEvent(event); }
     inline void SetWorker(Worker* _worker) { worker = _worker; }
 protected:
+    void paintEvent(QPaintEvent * event) { if(frame != nullptr) frame->update(); }
     void resizeEvent(QResizeEvent *event);
 private:
 

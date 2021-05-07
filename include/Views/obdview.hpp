@@ -9,6 +9,7 @@
 #include <App/config.hpp>
 #include <App/bluetooth.hpp>
 #include <App/theme.hpp>
+#include <App/Worker.hpp>
 #include <Widgets/CenterIndicator.hpp>
 #include <Widgets/Gauge.hpp>
 #define RPM_CODE         0x0C
@@ -22,86 +23,19 @@
 #define NUM_CODES	256
 
 
-
-class OBDWorker;
-
-class OBDFrame : public QWidget 
-{
-	Q_OBJECT
-public:
-    OBDFrame(QWidget *parent) : QWidget(parent) {}
-
-    inline bool IsFullscreen() { return fullscreen; }
-    inline void ToggleFullscreen() { fullscreen = !fullscreen; }
-
-protected:
-    void mouseDoubleClickEvent(QMouseEvent *);
-    inline void enterEvent(QEvent *) { setFocus(); }
-
-private:
-    bool fullscreen = false;
-
-signals:
-    void doubleClicked(bool fullscreen);
-    void toggle(bool enable);
-};
-
-
-class OBDView : public QStackedWidget
-{
-    Q_OBJECT
-public:
-    OBDView(QWidget *parent = nullptr);
-//    inline void PassKeyEvent(QKeyEvent *event) { worker->SendKeyEvent(event); }
-
-   protected:
-    void resizeEvent(QResizeEvent *event);
-
-   private:
-    class Settings : public QWidget {
-       public:
-        Settings(QWidget *parent = nullptr);
-
-       private:
-        QWidget *settingsWidget();
-//        QBoxLayout *rhdRowWidget();
-//        QBoxLayout *frameRateRowWidget();
-//        QBoxLayout *resolutionRowWidget();
-//        QBoxLayout *dpiRowWidget();
-//        QBoxLayout *dpiWidget();
-//        QBoxLayout *rtAudioRowwidget();
-//        QBoxLayout *audioChannelsRowWidget();
-//        QBoxLayout *bluetoothRowWidget();
-//        QBoxLayout *touchscreenRowWidget();
-//        QCheckBox *buttonCheckbox(QString name, QString key, aasdk::proto::enums::ButtonCode::Enum code);
-//        QBoxLayout *buttonsRowWidget();
-
-        Bluetooth *bluetooth;
-        Config *config;
-        Theme *theme;
-    };
-
-    QWidget *connectMsg();
-
-    Config *config = nullptr;
-    Theme *theme = nullptr;
-    OBDFrame *frame = nullptr;
-    OBDWorker *worker = nullptr;
-
-   signals:
-    void toggleFullscreen(QWidget *widget);
-
-};
-
-
-class OBDWorker : public QObject
+class OBDWorker : public Worker
 {
     Q_OBJECT
 public:
     OBDWorker(QWidget* _frame);
     ~OBDWorker();
     void UpdateSize();
-    QWidget* Display();
+    QWidget* Display() override;
+    void Paint(QPainter& painter) override {
+    	if(centerGauge != nullptr) centerGauge->Paint(painter);
+    	if(leftGauge != nullptr) leftGauge->Paint(painter);
+    	if(rightGauge != nullptr) rightGauge->Paint(painter);
+    }
 //    OBDData RequestData();
 
     enum WidgetEnum {
@@ -140,6 +74,7 @@ private:
 
     Gauge* centerGauge = nullptr;
     Gauge* leftGauge = nullptr;
+    Gauge* rightGauge = nullptr;
     CenterIndicator* centerIndicator = nullptr;
 
     const int myPort = 2223;

@@ -17,7 +17,6 @@ inline void Gauge::SetValue(double Value)
 
 void Gauge::Paint(QPainter& painter)
 {
-
     double pi = 3.1415926;
     int flip = (ThetaStart < ThetaEnd) ? 1 : -1;
     if (DrawAll) {
