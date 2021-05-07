@@ -132,8 +132,6 @@ private:
 
 
 
-    QWidget* displayWidget = nullptr;
-    QVBoxLayout* displayLayout = nullptr;
     QWidget* parent = nullptr;
     QTimer* updateTimer = nullptr;
     QLabel* topIndicator = nullptr;

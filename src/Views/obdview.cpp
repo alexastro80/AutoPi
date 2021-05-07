@@ -155,17 +155,19 @@ OBDWorker::OBDWorker(QWidget* _parent) : QObject(qApp)
     updateTimer->start(200);
  
     //UI code
-    displayWidget = new QWidget(_parent);
-    displayLayout = new QVBoxLayout(displayWidget);
-    //QWidget* centerWidget = new QWidget(displayWidget);
-    //QVBoxLayout* centerLayout = new QVBoxLayout(centerWidget);
-    //centerWidget->setAlignment(Qt::AlignCenter);
-    //centerLayout->setAlignment(Qt::AlignCenter);
-    //displayLayout->setContentsMargins(30, 30, 30, 30);
+    QHBoxLayout* obdLayout = new QHBoxLayout();
+    obdLayout->setAlignment(Qt::AlignCenter);
+    if(parent != nullptr) parent->setLayout(obdLayout);
+
+    QWidget* centerWidget = new QWidget(parent);
+    QVBoxLayout* centerLayout = new QVBoxLayout();
+    centerWidget->setLayout(centerLayout);
+    obdLayout->addWidget(centerWidget);
+
     topIndicator = new QLabel("00:00:00");
     topIndicator->setAlignment(Qt::AlignCenter);
-    displayLayout->addWidget(topIndicator);
-
+    centerLayout->addWidget(topIndicator);
+/*
     centerGauge = new Gauge(this, 500,250);
     centerGauge->RadiusOuter = 100;
     centerGauge->RadiusInner = 75;
@@ -183,24 +185,22 @@ OBDWorker::OBDWorker(QWidget* _parent) : QObject(qApp)
     leftGauge->Max = 40;
     leftGauge->Min = 0;
     leftGauge->ForegroundColor = Qt::green;
+*/
+    //displayLayout->addWidget(centerGauge);
+    //displayLayout->addWidget(leftGauge);
 
-    displayLayout->addWidget(centerGauge);
-    displayLayout->addWidget(leftGauge);
-
-    centerIndicator = new CenterIndicator(displayWidget);
-    displayLayout->addWidget(centerIndicator);
+    centerIndicator = new CenterIndicator(parent);
+    centerLayout->addWidget(centerIndicator);
     
     bottomIndicator1 = new QLabel("001340.0");
     bottomIndicator1->setAlignment(Qt::AlignCenter);
-    displayLayout->addWidget(bottomIndicator1);
+    centerLayout->addWidget(bottomIndicator1);
     
     bottomIndicator2 = new QLabel("32.6 MPG");
     bottomIndicator2->setAlignment(Qt::AlignCenter);
-    displayLayout->addWidget(bottomIndicator2);
-    displayLayout->addStretch();
+    centerLayout->addWidget(bottomIndicator2);
     
-    //displayLayout->addWidget(centerWidget);
-    displayLayout->setContentsMargins(30, 30, 30, 30);
+
     //displayLayout->addStretch();
 
 }
@@ -216,14 +216,12 @@ void OBDWorker::UpdateSize()
 QWidget* OBDWorker::Display()
 {
    
-    return displayWidget;
+    return parent;
     
 }
 OBDWorker::~OBDWorker()
 {
     if(mySocket != nullptr) delete mySocket;
-    if(displayWidget != nullptr) delete displayWidget;
-    if(displayLayout != nullptr) delete displayLayout;
 
     if(parent != nullptr) delete parent;
     if(updateTimer != nullptr) delete updateTimer;
