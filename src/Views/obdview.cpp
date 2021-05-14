@@ -89,16 +89,17 @@ OBDWorker::OBDWorker(QWidget* _parent) : Worker()
     bottomIndicator1 = new QLabel("001340.0");
     bottomIndicator1->setAlignment(Qt::AlignCenter);
     centerLayout->addWidget(bottomIndicator1);
-    
+    centerLayout->addSpacerItem(new QSpacerItem(1,20));
     bottomIndicator2 = new QLabel("32.6 MPG");
     bottomIndicator2->setAlignment(Qt::AlignCenter);
     centerLayout->addWidget(bottomIndicator2);
-    centerLayout->setContentsMargins(0, 200, 0, 250);
+    centerLayout->addSpacerItem(new QSpacerItem(1,30));
+    centerLayout->setContentsMargins(0, 200, 0, 200);
 
 
     QPoint centerPoint = QGuiApplication::primaryScreen()->geometry().center();
     int xCenter = centerPoint.x()+2;
-    int yCenter = centerPoint.y()-5;
+    int yCenter = centerPoint.y()-10;
     std::cout << "X: " << xCenter;
     std::cout << "\nY:" << yCenter;
 
