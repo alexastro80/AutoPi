@@ -46,7 +46,7 @@ class Theme : public QObject {
     static const QColor success_color;
 
     Theme();
-    bool Mode;
+    bool Mode = true;
 
     void Scale(double scale);
 
@@ -79,7 +79,7 @@ class Theme : public QObject {
    private:
     QPalette palette;
     QMap<QString, QString> stylesheets;
-    bool mode = false;
+    bool mode = true;
     double scale = 1.0;
 
     void setPalette();
