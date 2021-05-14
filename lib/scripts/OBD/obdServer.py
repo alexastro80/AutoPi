@@ -97,7 +97,7 @@ def main(args):
                         response.to_base_units()
                         responseVal = double(response.value.magnitude)
 
-                        packet = struct.pack('Bid', 1, codeNum, responseVal)
+                        packet = struct.pack('bbd', 1, codeNum, responseVal)
                         print("Sending " + str(responseVal))
                         print(packet)
                         svrSock.sendto(packet, sendAddress)
