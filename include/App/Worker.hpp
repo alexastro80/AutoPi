@@ -10,15 +10,15 @@ public:
     inline virtual void Paint(QPainter& painter) {}
     inline virtual void SetOpacity(unsigned int alpha) {  }
     inline virtual void UpdateSize() {  }
-    inline virtual void SetNightMode(bool mode) {  }
+    inline virtual void SetNightMode(bool mode) { nightMode = mode; }
     inline virtual void SendKeyEvent(QKeyEvent *event) {  }
     inline virtual QWidget* Display() { return nullptr; }
     void Show() { };
     void Unshow() { };
 protected:
     QWidget* frame;
-private:
     bool nightMode;
+private:
    
 };
 

@@ -79,7 +79,6 @@ class Theme : public QObject {
    private:
     QPalette palette;
     QMap<QString, QString> stylesheets;
-    bool mode = true;
     double scale = 1.0;
 
     void setPalette();
@@ -87,7 +86,7 @@ class Theme : public QObject {
     QString scaleStylesheet(QString stylesheet);
     QIcon themedButtonIcon(QIcon icon, QAbstractButton *button);
 
-    inline QColor getBaseColor() { return mode ? QColor(255, 255, 255) : QColor(0, 0, 0); }
+    inline QColor getBaseColor() { return Mode ? QColor(255, 255, 255) : QColor(0, 0, 0); }
 
    signals:
     void modeUpdated(bool mode);

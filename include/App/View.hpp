@@ -12,6 +12,12 @@ Q_OBJECT
 public:
     View(QWidget *parent = nullptr, Worker* _worker = nullptr);
     inline Frame* GetFrame() { return frame; }
+    inline void SetFrame(Frame* _frame) {
+    	if (frame != nullptr)
+    		delete frame;
+    	frame = _frame;
+    	_frame = nullptr;
+    }
     inline void PassKeyEvent(QKeyEvent *event) { worker->SendKeyEvent(event); }
     inline void SetWorker(Worker* _worker) { worker = _worker; }
 protected:

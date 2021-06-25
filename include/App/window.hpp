@@ -16,6 +16,7 @@
 #include <Views/obdview.hpp>
 #include "App/theme.hpp"
 #include <App/View.hpp>
+#include <App/SettingsManager.hpp>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -37,9 +38,13 @@ class MainWindow : public QMainWindow {
     Shortcuts *shortcuts;
 
     View* openauto;
-    OpenAuto* openautoWorker;
     View* obdview;
+    View* settings;
+
+    OpenAuto* openautoWorker;
     OBDWorker* obdWorker;
+    SettingsManager* settingsManager;
+
     QStackedWidget *stack;
     QVBoxLayout *rail;
     QButtonGroup *railGroup;

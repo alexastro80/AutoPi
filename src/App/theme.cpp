@@ -54,9 +54,9 @@ Theme::Theme() : QObject(qApp), palette()
     stylesheets["dark"] = parseStylesheet(":/stylesheets/dark.qss");
 }
 
-void Theme::Scale(double scale)
+void Theme::Scale(double _scale)
 {
-    scale = scale;
+    scale = _scale;
 
     Theme::font_10.setPointSize(std::ceil(10 * scale));
     Theme::font_12.setPointSize(std::ceil(12 * scale));
@@ -131,9 +131,9 @@ QIcon Theme::themedButtonIcon(QIcon icon, QAbstractButton *button)
     }
 
     QColor base_color(getBaseColor());
-    base_color.setAlpha(mode ? 222 : 255);
+    base_color.setAlpha(Mode ? 222 : 255);
     QColor accent_color(Config::getInstance()->Color());
-    accent_color.setAlpha(mode ? 222 : 255);
+    accent_color.setAlpha(Mode ? 222 : 255);
 
     QPixmap normal_on(size);
     normal_on.fill(!button->property("page").isNull() ? accent_color : base_color);
@@ -143,7 +143,7 @@ QIcon Theme::themedButtonIcon(QIcon icon, QAbstractButton *button)
     {
         QColor color(base_color);
         if (!button->property("page").isNull())
-            color.setAlpha(mode ? 134 : 162);
+            color.setAlpha(Mode ? 134 : 162);
         normal_off.fill(color);
         normal_off.setMask(icon_mask);
     }
@@ -152,7 +152,7 @@ QIcon Theme::themedButtonIcon(QIcon icon, QAbstractButton *button)
     QPixmap disabled_off(size);
     {
         QColor color(base_color);
-        color.setAlpha(mode ? 128 : 97);
+        color.setAlpha(Mode ? 128 : 97);
         disabled_on.fill(color);
         disabled_on.setMask(!alt_icon_mask.isNull() ? alt_icon_mask : icon_mask);
         disabled_off.fill(color);
@@ -174,7 +174,7 @@ QIcon Theme::MakeButtonIcon(QString name, QPushButton *button, QString alt_name)
         button->setProperty("alt_icon", QVariant::fromValue(QIcon(QString(":/icons/%1.svg").arg(alt_name))));
     QString path;
     QFileInfo checkIcon;
-    if(mode)
+    if(Mode)
     {
         path = QString(":/icons/dark/%1.svg").arg(name);
     }
@@ -197,7 +197,7 @@ QIcon Theme::MakeButtonIcon(QString name, QPushButton *button, QString alt_name)
 void Theme::Update()
 {
     setPalette();
-    qApp->setStyleSheet(scaleStylesheet(stylesheets[mode ? "dark" : "light"]));
+    qApp->setStyleSheet(scaleStylesheet(stylesheets[Mode ? "dark" : "light"]));
 
     for (QWidget *widget : qApp->allWidgets()) {
         QAbstractButton *button = qobject_cast<QAbstractButton*>(widget);
@@ -205,7 +205,7 @@ void Theme::Update()
             button->setIcon(themedButtonIcon(button->icon(), button));
     }
 
-    emit modeUpdated(mode);
+    emit modeUpdated(Mode);
 }
 
 Theme *Theme::getInstance()

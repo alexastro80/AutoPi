@@ -1,4 +1,5 @@
 #include "App/window.hpp"
+#include "Value/StringValue.hpp"
 
 #include <math.h>
 
@@ -9,7 +10,7 @@
 
 MainWindow::MainWindow()
 {
-    setAttribute(Qt::WA_TranslucentBackground, true);
+  //  setAttribute(Qt::WA_TranslucentBackground, true);
 
     config = Config::getInstance();
     theme = Theme::getInstance();
@@ -17,29 +18,48 @@ MainWindow::MainWindow()
 
     initTheme();
     initConfig();
+
     openauto = new View(this);
     Frame* openautoFrame = openauto->GetFrame();
     std::function<void(bool)> callback = [frame = openautoFrame](bool active) { frame->toggle(active); };
-    
     openautoWorker = new OpenAuto(callback, theme->Mode, openautoFrame);
     openauto->SetWorker(openautoWorker);
+
     std::cout << "OBD View\n";
     obdview = new View(this);
     Frame* obdFrame = obdview->GetFrame();
     obdWorker = new OBDWorker(obdFrame);
     obdFrame->SetWorker(obdWorker);
     
-    
+    settings = new View(this);
+    Frame* settingsFrame = settings->GetFrame();
+    settingsManager = new SettingsManager();
+    settingsFrame->SetWorker(settingsManager);
+    settingsManager->Add(new SettingCategory("General"));
+    settingsManager->Add(new SettingCategory("OpenAuto"));
+    settingsManager->Add(new SettingCategory("OBD"));
+    StringValue* darkTheme = new StringValue("DarkMode");
+    settingsManager->Add(new Setting("General", "ThemeMode", darkTheme));
+    settingsManager->Add(new Setting("General", "Font", new StringValue("Arial")));
+    settingsManager->Add(new Setting("General", "Volume", new StringValue("20")));
+    //settingsManager->Add(Setting("General", "Volume", INT_TYPE, (double*) nullptr));
+
+    settingsManager->initialize(settingsFrame);
+    if (!settingsManager->LoadSettings("AutoPi.csv"))
+    	settingsManager->WriteSettings("AutoPi.csv");
+
     stack = new QStackedWidget(this);
     rail = new QVBoxLayout();
     railGroup = new QButtonGroup(this);
     pages = new QStackedLayout();
     bar = new QHBoxLayout();
 
-    connect(railGroup, QOverload<int, bool>::of(&QButtonGroup::buttonToggled),
+    connect(railGroup, QOverload<int, bool>::of(&QButtonGroup::buttonToggled), // @suppress("Invalid arguments")
             [this](int id, bool) { pages->setCurrentIndex(id); });
     connect(openauto, &View::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
     connect(obdview, &View::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); });
+//    connect(settings, &View::toggleFullscreen, [this](QWidget *widget) { AddWidget(widget); })
+
     connect(config, &Config::scaleChanged, [theme = theme](double scale) { theme->Scale(scale); });
     connect(config, &Config::pageChanged,
             [railGroup = railGroup, pages = pages](QWidget *page, bool enabled) {
@@ -150,6 +170,7 @@ void MainWindow::addPages()
 {
     addPage("Android Auto", openauto, "android_auto");
     addPage("OBD Viewer", obdview, "car");
+    addPage("Settings", settings, "car");
 
     // toggle initial page
     for (QAbstractButton *button : railGroup->buttons()) {
@@ -256,10 +277,10 @@ QWidget *MainWindow::controlsWidget()
     brightness->setIconSize(Theme::icon_26);
     brightness->setIcon(theme->MakeButtonIcon("brightness_high", brightness));
 
-    QLabel *brightness_value = new QLabel(QString::number(std::ceil(config->Brightness() / 2.55)), widget);
+    QLabel *brightness_value = new QLabel(QString::number((double)std::ceil(config->Brightness() / 2.55)), widget); // @suppress("Ambiguous problem")
     brightness_value->setFont(Theme::font_10);
     connect(config, &Config::brightnessChanged, [brightness_value](int brightness) {
-        brightness_value->setText(QString::number(std::ceil(brightness / 2.55)));
+        brightness_value->setText(QString::number(std::ceil((double)brightness / 2.55))); // @suppress("Ambiguous problem") // @suppress("Invalid arguments")
     });
 
     QPushButton *darkMode = new QPushButton(widget);
