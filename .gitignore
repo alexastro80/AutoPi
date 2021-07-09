@@ -8,3 +8,4 @@
 /bin/
 *.qrc
 /lib/resources/*.qrc
+/Debug/
