@@ -70,8 +70,8 @@ void Setting::initialize(QWidget* parent)
 	if (value != nullptr) {
 		QWidget* widget = value->Widget();
 		if (widget != nullptr) {
-			widget->setMaximumWidth(50);
-			layout->addWidget(value->Widget(item), 30);
+			widget->setMaximumWidth(500);
+			layout->addWidget(value->Widget(item));
 
 		}
 	}

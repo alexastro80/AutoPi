@@ -16,7 +16,7 @@ public:
 	virtual void Set(std::string newValue) = 0;
 	virtual std::string toString() const = 0;
 	virtual std::string Type() const = 0;
-	virtual QWidget* Widget(QWidget* parent = nullptr) const = 0;
+	virtual QWidget* Widget(QWidget* parent = nullptr) = 0;
 };
 
 #endif /* INCLUDE_VALUE_VALUEOBJECT_H_ */

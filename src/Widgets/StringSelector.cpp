@@ -1,4 +1,4 @@
-#include <include/Widgets/StringSelector.hpp>
+#include <Widgets/StringSelector.hpp>
 
 StringSelector::StringSelector()
 {

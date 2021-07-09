@@ -1,4 +1,4 @@
-#include <include/Widgets/NumberSelector.hpp>
+#include <Widgets/NumberSelector.hpp>
 #include <QFont>
 NumberSelector::NumberSelector(QWidget* parent, int defaultValue) : QWidget(parent)
 {

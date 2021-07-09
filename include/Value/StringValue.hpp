@@ -54,11 +54,24 @@ public:
 				return *valueRef;
 			return value;
 		}
-	QWidget* Widget(QWidget* parent = nullptr) const override
-	{ return new QLineEdit(QString(Value().c_str()), parent);}
-private:
+	QWidget* Widget(QWidget* parent = nullptr) override
+	{
+		if (line == nullptr) {
+			line = new QLineEdit(QString(Value().c_str()), parent);
+			QObject::connect(line,&QLineEdit::textChanged,this,&StringValue::textChanged);
+		}
+		return line;
+	}
+
+	public slots:
+	void textChanged(const QString& text) {
+		emit valueChanged(text.toStdString());
+	}
+protected:
 	std::string value = "";
 	std::string* valueRef = nullptr;
+private:
+	QLineEdit* line = nullptr;
 
 signals:
 	void valueChanged(std::string);

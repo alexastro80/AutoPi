@@ -1,5 +1,7 @@
 #include "App/window.hpp"
 #include "Value/StringValue.hpp"
+#include "Value/StringOption.hpp"
+#include "Value/IntValue.hpp"
 
 #include <math.h>
 
@@ -38,11 +40,16 @@ MainWindow::MainWindow()
     settingsManager->Add(new SettingCategory("General"));
     settingsManager->Add(new SettingCategory("OpenAuto"));
     settingsManager->Add(new SettingCategory("OBD"));
-    StringValue* darkTheme = new StringValue("DarkMode");
-    settingsManager->Add(new Setting("General", "ThemeMode", darkTheme));
+    StringOption* darkTheme = new StringOption("Light");
+    darkTheme->AddOption("Dark");
+    settingsManager->Add(new Setting("General", "Theme", darkTheme));
+
+
     settingsManager->Add(new Setting("General", "Font", new StringValue("Arial")));
-    settingsManager->Add(new Setting("General", "Volume", new StringValue("20")));
+    settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
     //settingsManager->Add(Setting("General", "Volume", INT_TYPE, (double*) nullptr));
+
+
 
     settingsManager->initialize(settingsFrame);
     if (!settingsManager->LoadSettings("AutoPi.csv"))
