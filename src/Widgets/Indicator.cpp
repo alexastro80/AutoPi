@@ -1,2 +1,2 @@
-#include "Indicator.hpp"
+#include <Widgets/Indicator.hpp>
 

@@ -7,7 +7,7 @@ class Paintable : public QObject
 {
     Q_OBJECT
 public:
-    explicit Paintable(QObject *parent = nullptr);
+    explicit Paintable(QObject *parent = nullptr){}
     virtual void Paint(QPainter& painter) = 0;
 
 protected:

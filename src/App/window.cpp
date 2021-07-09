@@ -27,6 +27,7 @@ MainWindow::MainWindow()
     obdview = new View(this);
     Frame* obdFrame = obdview->GetFrame();
     obdWorker = new OBDWorker(obdFrame);
+    obdFrame->SetWorker(obdWorker);
     
     
     stack = new QStackedWidget(this);

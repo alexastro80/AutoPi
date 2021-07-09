@@ -4,8 +4,8 @@
 #include <QtWidgets>
 #include <QLabel>
 #include <App/theme.hpp>
-
-class CenterIndicator : public QWidget
+#include <Widgets/Indicator.hpp>
+class CenterIndicator : public Indicator
 {
 	Q_OBJECT
 public:
@@ -22,8 +22,8 @@ public:
 		{ if(centerLabel != nullptr) centerLabel->setText(label); }
 	void SetBottomLabel(const QString& label)
 		{ if(bottomLabel != nullptr) bottomLabel->setText(label); }
-	void Update(double value)
-		{ val = value+val; SetCenterLabel(QString::number(val)); }
+	void SetValue(double val)
+		{ value = value+val; SetCenterLabel(QString::number(value)); }
 	
 private:
 	QVBoxLayout* _layout = nullptr;
