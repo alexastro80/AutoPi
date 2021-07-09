@@ -10,13 +10,34 @@
 
 #include <string.h>
 #include <QWidget>
-class ValueObject {
+
+#include "ValueBase.hpp"
+template<class T>
+class ValueObject: public ValueBase {
+
 public:
-	virtual void Connect(const QObject* object, const char* method) const = 0;
-	virtual void Set(std::string newValue) = 0;
-	virtual std::string toString() const = 0;
-	virtual std::string Type() const = 0;
-	virtual QWidget* Widget(QWidget* parent = nullptr) = 0;
+	ValueObject(T val, T *valRef = nullptr): value(val) {
+		if (valRef != nullptr) {
+			valueRef = valRef;
+			*valueRef = value;
+		}
+	}
+	~ValueObject() {}
+
+
+	std::string Type() const override{
+		return typeid(value).name();
+	}
+	T Value() const {
+		return (valueRef != nullptr) ? *valueRef : value;
+	}
+	void Value(T val) {
+		(valueRef != nullptr) ? *valueRef = val : value = val;
+	}
+	virtual QWidget* Widget(QWidget *parent = nullptr) = 0;
+protected:
+	T value;
+	T *valueRef = nullptr;
 };
 
 #endif /* INCLUDE_VALUE_VALUEOBJECT_H_ */

@@ -51,7 +51,8 @@ class Theme : public QObject {
     void Scale(double scale);
 
     QIcon MakeButtonIcon(QString name, QPushButton *button, QString alt_name = QString());
-    void Update();
+
+
 
     inline static QFrame *Br(QWidget *parent = nullptr, bool vertical = false)
     {
@@ -75,6 +76,11 @@ class Theme : public QObject {
         QScroller::scroller(area->viewport())->setScrollerProperties(properties);
     }
     static Theme *getInstance();
+
+   void Update() {Update(Mode); }
+   public slots:
+
+   void Update(bool mode);
 
    private:
     QPalette palette;

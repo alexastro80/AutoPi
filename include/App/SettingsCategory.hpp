@@ -18,6 +18,7 @@ public:
 			if (setting != nullptr)
 				delete setting;
 		}
+		if (page != nullptr) delete page;
 	}
 	void Add(Setting *setting) {
 		if (setting != nullptr)

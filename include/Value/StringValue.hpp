@@ -12,70 +12,43 @@
 #include <QLineEdit>
 #include <string.h>
 using std::string;
-class StringValue : public QObject, public ValueObject
-{
+class StringValue: public QObject, public ValueObject<std::string> {
 	Q_OBJECT
 public:
-	StringValue(const std::string& _value = "") {
-		value = _value;
+	StringValue(string val, string *valRef = nullptr) :
+			ValueObject(val, valRef) {
 	}
-	StringValue(std::string* valRef, const std::string& defaultValue = "") {
-		value = defaultValue;
-		valueRef = valRef;
-	}
-	StringValue(const StringValue& _value) {
-		value = _value.value;
-		valueRef = _value.valueRef;
-	}
-	StringValue& operator=(const StringValue& _value) {
-		value = _value.value;
-		valueRef = _value.valueRef;
-		return *this;
-	}
-	StringValue& operator=(const std::string _value) {
-		value = _value;
-		if (valueRef != nullptr)
-			*valueRef = _value;
-		return *this;
-	}
-	virtual void Connect(const QObject* object, const char* method) const {
-		QObject::connect(this, SIGNAL(StringValue::valueChanged(string)), object, SLOT(method));
-	}
+	~StringValue() { if (line != nullptr) delete line; }
+	void Connect(const QObject *object, const char *method) const override {
+				QObject::connect(this, SIGNAL(valueChanged(std::string)), object, SLOT(method));
+			}
 	void Set(std::string newValue) override {
-		value = newValue;
-		if (valueRef != nullptr)
-			*valueRef = value;
-		valueChanged(value);
+		Value(newValue);
+		valueChanged(Value());
 	}
-	std::string toString() const override { return Value(); }
-	std::string Type() const override { return "STRING"; }
-	std::string Value() const {
-			if (valueRef != nullptr)
-				return *valueRef;
-			return value;
-		}
-	QWidget* Widget(QWidget* parent = nullptr) override
+	std::string toString() const override {
+		return Value();
+	}
+	QWidget* Widget(QWidget *parent = nullptr) override
 	{
 		if (line == nullptr) {
 			line = new QLineEdit(QString(Value().c_str()), parent);
-			QObject::connect(line,&QLineEdit::textChanged,this,&StringValue::textChanged);
+			QObject::connect(line, &QLineEdit::textChanged, this,
+					&StringValue::textChanged);
 		}
 		return line;
 	}
 
-	public slots:
-	void textChanged(const QString& text) {
-		emit valueChanged(text.toStdString());
+public slots:
+	void textChanged(const QString &text) {
+		ValueObject::Value(text.toStdString());
+		emit valueChanged(Value());
 	}
-protected:
-	std::string value = "";
-	std::string* valueRef = nullptr;
-private:
-	QLineEdit* line = nullptr;
 
+private:
+	QLineEdit *line = nullptr;
 signals:
 	void valueChanged(std::string);
 };
-
 
 #endif /* INCLUDE_VALUE_STRINGVALUE_HPP_ */

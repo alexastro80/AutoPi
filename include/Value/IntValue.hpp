@@ -14,55 +14,42 @@
 
 #include <QObject>
 
-class IntValue: public QObject, public ValueObject {
-Q_OBJECT
+class IntValue: public QObject, public ValueObject<int> {
+	Q_OBJECT
 public:
-	IntValue(int integer) {
-		value = integer;
+	IntValue(int val, int *valRef = nullptr) :
+			ValueObject(val, valRef) {
 	}
-	IntValue(int *integerRef) {
-		if (integerRef != nullptr) {
-			valueRef = integerRef;
-			value = *valueRef;
-		}
-	}
+	~IntValue() { if (numSelector != nullptr) delete numSelector; }
 
-	void Connect(const QObject* object, const char* method) const override{
-			QObject::connect(this, SIGNAL(IntValue::valueChanged(int)), object, SLOT(method));
-		}
+	void Connect(const QObject *object, const char *method) const override {
+				QObject::connect(this, SIGNAL(valueChanged(int)), object, SLOT(method));
+			}
 	void Set(std::string newValue) override {
 		try {
-			value = std::stoi(newValue);
-			if (valueRef != nullptr)
-				*valueRef = value;
-			else
-				emit valueChanged(value);
-		} catch(std::invalid_argument &e) {}
+			Value(std::stoi(newValue));
+			emit valueChanged(Value());
+		} catch (std::invalid_argument &e) {
+		}
 	}
 
 	std::string toString() const override {
-		return std::to_string(value);
+		return std::to_string(Value());
 	}
 
-	std::string Type() const override {
-		return "INT";
-	}
-
-	QWidget* Widget(QWidget *parent) override{
+	QWidget* Widget(QWidget *parent) override {
 		if (numSelector == nullptr) {
-			numSelector = new NumberSelector(parent, value);
+			numSelector = new NumberSelector(parent, Value());
 			QObject::connect(numSelector, &NumberSelector::valueChanged, this,
 					&IntValue::valueChanged);
 		}
 		return numSelector;
 	}
-protected:
-	int value = 0;
-	int *valueRef = nullptr;
+
 private:
 	NumberSelector *numSelector = nullptr;
 
-signals:
+	signals:
 	void valueChanged(int);
 };
 

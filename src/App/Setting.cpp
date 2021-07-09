@@ -10,14 +10,14 @@
 #include <QLabel>
 #include <QString>
 #include <iostream>
-Setting::Setting(string _parent, string _name, ValueObject* valObj)
+Setting::Setting(string _parent, string _name, ValueBase* valObj)
 {
 	parent = _parent;
 	name = _name;
 	value = valObj;
 }
 
-Setting::Setting(string _parent, string _name, const QObject* object, const char* slot, ValueObject* _value)
+Setting::Setting(string _parent, string _name, const QObject* object, const char* slot, ValueBase* _value)
 {
 	parent = _parent;
 	name = _name;

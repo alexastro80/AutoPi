@@ -30,6 +30,7 @@ public:
 		for (auto category : Categories) {
 			if (category != nullptr) delete category;
 		}
+		if (tabWidget != nullptr) delete tabWidget;
 	}
 	//Worker Functions
 	QWidget* Display() override { return tabWidget; }

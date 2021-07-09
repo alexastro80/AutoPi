@@ -12,7 +12,7 @@ using std::vector;
 #include <QString>
 #include <QObject>
 
-#include <Value/ValueObject.h>
+#include <Value/ValueBase.hpp>
 
 
 const int COLUMNS =4;
@@ -41,8 +41,8 @@ union Value {
 class Setting : public QObject {
 	Q_OBJECT
 public:
-	Setting(string _parent, string _name, ValueObject* value);
-	Setting(string _parent, string _name, const QObject* object, const char* method, ValueObject* value);
+	Setting(string _parent, string _name, ValueBase* value);
+	Setting(string _parent, string _name, const QObject* object, const char* method, ValueBase* value);
 
 	Setting(const Setting& setting) {
 		parent = setting.parent;
@@ -50,6 +50,10 @@ public:
 		value = setting.value;
 	}
 
+	~Setting() {
+		if (value != nullptr) delete value;
+		if (item != nullptr) delete item;
+	}
 	Setting& operator=(const Setting& setting) {
 		parent = setting.parent;
 		name = setting.name;
@@ -65,7 +69,7 @@ public:
 		if (value != nullptr)
 			value->Set(newValue);
 	}
-	void GetValue(ValueObject *val) const {
+	void GetValue(ValueBase *val) const {
 		val = value;
 	}
 
@@ -86,7 +90,7 @@ public:
 private:
 	void initialize(QWidget* parent = nullptr);
 	QWidget* item = nullptr;
-	ValueObject* value = nullptr;
+	ValueBase* value = nullptr;
 };
 
 
