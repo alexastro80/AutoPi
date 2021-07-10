@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 using std::string;
 using std::vector;
 
@@ -78,7 +79,7 @@ public:
 			return value->Type();
 		return "";
 	}
-	bool isValid() 	{ return (parent.empty() && name.empty()); }
+	bool isValid() 	{ std::cout << name + " " + parent + "\n"; return (!parent.empty() && !name.empty()); }
 
 	void Modify(string csv[], int size = COLUMNS);
 

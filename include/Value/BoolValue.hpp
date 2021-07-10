@@ -30,21 +30,23 @@ public:
 	}
 
 	std::string toString() const override {
-		return (value) ? "TRUE" : "FALSE";
+		return Value() ? "TRUE" : "FALSE";
 	}
 
 	QWidget* Widget(QWidget* parent) override {
 		if (cBox == nullptr) {
 			cBox = new QCheckBox(parent);
 			QObject::connect(cBox, &QCheckBox::stateChanged, this, &BoolValue::stateChanged);
-			cBox->setTristate(Value());
+			cBox->setTristate(false);
 		}
+		cBox->setCheckState((Value()) ? Qt::Checked : Qt::Unchecked);
 		return cBox;
 	}
 
 	public slots:
 	void stateChanged(int x) {
-		emit valueChanged(x == Qt::Checked);
+		Value(x == Qt::Checked);
+		emit valueChanged(Value());
 	}
 
 private:

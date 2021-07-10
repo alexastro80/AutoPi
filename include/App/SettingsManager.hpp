@@ -34,7 +34,7 @@ public:
 	}
 	//Worker Functions
 	QWidget* Display() override { return tabWidget; }
-	void UpdateSize() override;
+
 	void initialize(QWidget* parent = nullptr);
 	void Add(SettingCategory* category) { if (category != nullptr) Categories.push_back(category); }
 	bool Add(Setting* setting);
@@ -53,7 +53,14 @@ public:
 	bool LoadSettings(string filename);
 	bool WriteSettings(string filename);
 
+
 	vector<SettingCategory*> Categories;
+
+	public slots:
+	void Reset() { if (LoadSettings("AutoPi.csv")) std::cout << "Settings reverted!\n"; }
+	void Save() { if (WriteSettings("AutoPi.csv")) std::cout << "Settings saved!\n"; }
+	void UpdateSize() override;
+
 private:
 	void parseLine(const string& line, string tokens[], int size = COLUMNS);
 

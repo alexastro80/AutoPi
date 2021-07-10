@@ -52,28 +52,33 @@ void Setting::Modify(string csv[], int size)
 		&& (name.compare(csv[1]) == 0)
 		&& (Type().compare(csv[2]) == 0))
 	{
+		std::cout << name << " " << value->toString() << " " << csv[3] << "\n";
 		ChangeVal(csv[3]);
 	}
 }
 
 void Setting::initialize(QWidget* parent)
 {
-	item = new QWidget(parent);
-	QHBoxLayout* layout = new QHBoxLayout(item);
-	layout->setAlignment(Qt::AlignLeft);
-	item->setLayout(layout);
-	QLabel* label = new QLabel();
-	label->setVisible(true);
-	label->setText(QString::fromStdString(name + ":"));
-//	label->setAlignment(Qt::AlignRight);
-	layout->addWidget(label);
-	if (value != nullptr) {
-		QWidget* widget = value->Widget();
-		if (widget != nullptr) {
-			widget->setMaximumWidth(500);
-			layout->addWidget(value->Widget(item));
-
+	if (item == nullptr) {
+		item = new QWidget(parent);
+		QHBoxLayout* layout = new QHBoxLayout(item);
+		layout->setAlignment(Qt::AlignLeft);
+		item->setLayout(layout);
+		QLabel* label = new QLabel();
+		label->setVisible(true);
+		label->setText(QString::fromStdString(name + ":"));
+	//	label->setAlignment(Qt::AlignRight);
+		layout->addWidget(label);
+		if (value != nullptr) {
+			QWidget* widget = value->Widget();
+			if (widget != nullptr) {
+				widget->setMaximumWidth(500);
+				layout->addWidget(value->Widget(item));
+			}
 		}
+	} else {
+		//Refreshes current widget.
+		value->Widget();
 	}
 
 }

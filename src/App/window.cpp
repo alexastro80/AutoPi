@@ -39,24 +39,6 @@ MainWindow::MainWindow() {
 	Frame *settingsFrame = settings->GetFrame();
 	settingsManager = new SettingsManager();
 	settingsFrame->SetWorker(settingsManager);
-	settingsManager->Add(new SettingCategory("General"));
-	settingsManager->Add(new SettingCategory("OpenAuto"));
-	settingsManager->Add(new SettingCategory("OBD"));
-	StringOption *darkTheme = new StringOption("Light");
-	darkTheme->AddOption("Light");
-	darkTheme->AddOption("Dark");
-	settingsManager->Add(
-			new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
-					new BoolValue(true)));
-
-	settingsManager->Add(
-			new Setting("General", "Font", new StringValue("Arial")));
-	settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
-	//settingsManager->Add(Setting("General", "Volume", INT_TYPE, (double*) nullptr));
-
-	settingsManager->initialize(settingsFrame);
-	if (!settingsManager->LoadSettings("AutoPi.csv"))
-		settingsManager->WriteSettings("AutoPi.csv");
 
 	stack = new QStackedWidget(this);
 	rail = new QVBoxLayout();
@@ -89,6 +71,7 @@ MainWindow::MainWindow() {
 
 	initUI();
 	initShortcuts();
+	initSettings();
 }
 
 void MainWindow::AddWidget(QWidget *widget) {
@@ -140,6 +123,45 @@ void MainWindow::initUI() {
 
 	stack->addWidget(widget);
 	setCentralWidget(stack);
+}
+
+void MainWindow::initSettings() {
+	Frame *settingsFrame = settings->GetFrame();
+	settingsManager->Add(new SettingCategory("General"));
+	settingsManager->Add(new SettingCategory("Open Auto"));
+
+	StringOption *frameRates = new StringOption("30");
+	frameRates->AddOption("30");
+	frameRates->AddOption("60");
+	settingsManager->Add(new Setting("Open Auto", "Frame Rate", frameRates));
+
+	StringOption *resolutions = new StringOption("480");
+	resolutions->AddOption("480");
+	resolutions->AddOption("720");
+	resolutions->AddOption("1080");
+	settingsManager->Add(
+			new Setting("Open Auto", "Resolution", config,
+					SLOT(setVideoResolution(std::string)), resolutions));
+
+	settingsManager->Add(new Setting("Open Auto", "DPI", new IntValue(140)));
+
+	settingsManager->Add(new SettingCategory("OBD"));
+	StringOption *darkTheme = new StringOption("Light");
+	darkTheme->AddOption("Light");
+	darkTheme->AddOption("Dark");
+	settingsManager->Add(
+			new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
+					new BoolValue(true)));
+
+	settingsManager->Add(
+			new Setting("General", "Font", new StringValue("Arial")));
+	settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
+	//settingsManager->Add(Setting("General", "Volume", INT_TYPE, (double*) nullptr));
+
+	settingsManager->initialize(settingsFrame);
+	settingsManager->LoadSettings("AutoPi.csv");
+	settingsManager->WriteSettings("AutoPi.csv");
+
 }
 
 void MainWindow::initShortcuts() {

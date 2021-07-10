@@ -20,7 +20,7 @@ public:
 	}
 	~StringValue() { if (line != nullptr) delete line; }
 	void Connect(const QObject *object, const char *method) const override {
-				QObject::connect(this, SIGNAL(valueChanged(std::string)), object, SLOT(method));
+				QObject::connect(this, SIGNAL(valueChanged(std::string)), object, method);
 			}
 	void Set(std::string newValue) override {
 		Value(newValue);

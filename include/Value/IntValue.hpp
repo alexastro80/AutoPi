@@ -15,16 +15,19 @@
 #include <QObject>
 
 class IntValue: public QObject, public ValueObject<int> {
-	Q_OBJECT
+Q_OBJECT
 public:
 	IntValue(int val, int *valRef = nullptr) :
 			ValueObject(val, valRef) {
 	}
-	~IntValue() { if (numSelector != nullptr) delete numSelector; }
+	~IntValue() {
+		if (numSelector != nullptr)
+			delete numSelector;
+	}
 
 	void Connect(const QObject *object, const char *method) const override {
-				QObject::connect(this, SIGNAL(valueChanged(int)), object, SLOT(method));
-			}
+		QObject::connect(this, SIGNAL(valueChanged(int)), object, method);
+	}
 	void Set(std::string newValue) override {
 		try {
 			Value(std::stoi(newValue));
@@ -41,15 +44,21 @@ public:
 		if (numSelector == nullptr) {
 			numSelector = new NumberSelector(parent, Value());
 			QObject::connect(numSelector, &NumberSelector::valueChanged, this,
-					&IntValue::valueChanged);
+					&IntValue::numberChanged);
 		}
+		numSelector->setValue(Value());
 		return numSelector;
+	}
+public slots:
+	void numberChanged(int x) {
+		Value(x);
+		emit valueChanged(x);
 	}
 
 private:
 	NumberSelector *numSelector = nullptr;
 
-	signals:
+signals:
 	void valueChanged(int);
 };
 

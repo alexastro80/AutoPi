@@ -55,6 +55,7 @@ class MainWindow : public QMainWindow {
     void initTheme();
     void initUI();
     void initShortcuts();
+    void initSettings();
     QLayout* body();
     void addPages();
     void addPage(QString name, QWidget *page, QString icon);
