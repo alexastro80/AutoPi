@@ -9,3 +9,9 @@
 *.qrc
 /lib/resources/*.qrc
 /Debug/
+/lib/scripts/*.txt
+*.cproject
+/.csettings/
+.project
+/.settings/
+*.csv
