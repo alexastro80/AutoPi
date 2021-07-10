@@ -15,6 +15,7 @@ using std::string;
 class StringValue: public QObject, public ValueObject<std::string> {
 	Q_OBJECT
 public:
+	StringValue() : ValueObject("") {}
 	StringValue(string val, string *valRef = nullptr) :
 			ValueObject(val, valRef) {
 	}

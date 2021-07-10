@@ -8,6 +8,7 @@ pip3 install pyAutoGui
 pip3 install pint
 pip3 install adafruit-blinka
 pip3 install adafruit_mcp3xxx
+pip3 install pydbus
 
 pwd
 DIR="$( dirname "$0" )"

@@ -12,6 +12,12 @@
 #include <App/Worker.hpp>
 #include <Widgets/CenterIndicator.hpp>
 #include <Widgets/Gauge.hpp>
+
+#include <vector>
+#include <string.h>
+#include <filesystem>
+#include <dirent.h>
+
 #define RPM_CODE         0x0C
 #define SPEED_CODE       0x0D
 #define RUN_TIME_CODE    0x1F
@@ -35,6 +41,17 @@ public:
     	if(centerGauge != nullptr) centerGauge->Paint(painter);
     	if(leftGauge != nullptr) leftGauge->Paint(painter);
     	if(rightGauge != nullptr) rightGauge->Paint(painter);
+    }
+
+    static std::vector<std::string>& getOBDOptions() {
+    	std::ifstream file("lib/scripts/bluetoothDevices.txt");
+    	std::vector<std::string> options;
+    	while(!file.eof()) {
+    		std::string line;
+    		std::getline(file, line);
+    		options.push_back(line);
+    	}
+    	return options;
     }
 //    OBDData RequestData();
 

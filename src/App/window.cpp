@@ -128,6 +128,14 @@ void MainWindow::initUI() {
 void MainWindow::initSettings() {
 	Frame *settingsFrame = settings->GetFrame();
 	settingsManager->Add(new SettingCategory("General"));
+	settingsManager->Add(
+			new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
+					new BoolValue(true)));
+	settingsManager->Add(
+			new Setting("General", "Font", new StringValue("Arial")));
+	settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
+
+	settingsManager->Add(new SettingCategory("Startup"));
 	settingsManager->Add(new SettingCategory("Open Auto"));
 
 	StringOption *frameRates = new StringOption("30");
@@ -146,17 +154,8 @@ void MainWindow::initSettings() {
 	settingsManager->Add(new Setting("Open Auto", "DPI", new IntValue(140)));
 
 	settingsManager->Add(new SettingCategory("OBD"));
-	StringOption *darkTheme = new StringOption("Light");
-	darkTheme->AddOption("Light");
-	darkTheme->AddOption("Dark");
-	settingsManager->Add(
-			new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
-					new BoolValue(true)));
-
-	settingsManager->Add(
-			new Setting("General", "Font", new StringValue("Arial")));
-	settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
-	//settingsManager->Add(Setting("General", "Volume", INT_TYPE, (double*) nullptr));
+	settingsManager->Add(new Setting("OBD", "OBD", new BoolValue(true)));
+	settingsManager->Add(new Setting("OBD", "OBD Address", new StringOption(getOBDOptions())));
 
 	settingsManager->initialize(settingsFrame);
 	settingsManager->LoadSettings("AutoPi.csv");
