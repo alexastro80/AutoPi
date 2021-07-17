@@ -17,8 +17,10 @@ public:
 		for (auto setting : Settings) {
 			if (setting != nullptr)
 				delete setting;
+			setting = nullptr;
 		}
 		if (page != nullptr) delete page;
+		page = nullptr;
 	}
 	void Add(Setting *setting) {
 		if (setting != nullptr)

@@ -29,8 +29,10 @@ public:
 	~SettingsManager() {
 		for (auto category : Categories) {
 			if (category != nullptr) delete category;
+			category = nullptr;
 		}
 		if (tabWidget != nullptr) delete tabWidget;
+		tabWidget = nullptr;
 	}
 	//Worker Functions
 	QWidget* Display() override { return tabWidget; }

@@ -54,6 +54,8 @@ public:
 	~Setting() {
 		if (value != nullptr) delete value;
 		if (item != nullptr) delete item;
+		value = nullptr;
+		item = nullptr;
 	}
 	Setting& operator=(const Setting& setting) {
 		parent = setting.parent;

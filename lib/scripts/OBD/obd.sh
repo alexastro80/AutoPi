@@ -1,10 +1,8 @@
 #!/bin/sh
-
+pid=$!
 DIR="$( dirname "$0" )"
 cd $DIR
-
-#Connect OBD
-./connectOBD.sh &
-
-#Start OBD Server
+./connectOBD.sh $1 &
+sleep 2
 python ./obdServer.py 2222
+

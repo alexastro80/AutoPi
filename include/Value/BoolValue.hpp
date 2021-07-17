@@ -18,7 +18,7 @@ public:
 	BoolValue(bool val, bool *valRef = nullptr) :
 			ValueObject(val, valRef) {
 	}
-	~BoolValue() { if (cBox != nullptr) delete cBox; }
+	~BoolValue() { if (cBox != nullptr) delete cBox; cBox = nullptr;}
 	void Connect(const QObject *object, const char *method) const override {
 				QObject::connect(this, SIGNAL(valueChanged(bool)), object, method);
 			}

@@ -19,7 +19,7 @@ public:
 	StringValue(string val, string *valRef = nullptr) :
 			ValueObject(val, valRef) {
 	}
-	~StringValue() { if (line != nullptr) delete line; }
+	~StringValue() { if (line != nullptr) delete line; line = nullptr;}
 	void Connect(const QObject *object, const char *method) const override {
 				QObject::connect(this, SIGNAL(valueChanged(std::string)), object, method);
 			}

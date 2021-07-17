@@ -23,6 +23,7 @@ public:
 	~IntValue() {
 		if (numSelector != nullptr)
 			delete numSelector;
+		numSelector = nullptr;
 	}
 
 	void Connect(const QObject *object, const char *method) const override {

@@ -18,8 +18,8 @@ public:
 	StringOption(string val, string *valRef = nullptr) :
 			StringValue(val, valRef) {
 	}
-	StringOption(const std::vector<std::string> &_options,
-			std::string *valRef) :
+	StringOption(std::vector<std::string> _options,
+			std::string *valRef = nullptr) :
 			StringValue("", valRef) {
 		if (!_options.empty()) {
 			Value(_options.at(0));
@@ -30,6 +30,7 @@ public:
 			~StringOption() {
 				if (comboBox != nullptr)
 					delete comboBox;
+				comboBox = nullptr;
 			}
 			void AddOption(std::string option) {
 				if (comboBox == nullptr)

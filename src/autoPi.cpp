@@ -9,19 +9,17 @@ int main(int argc, char *argv[])
      QApplication autoPi(argc, argv);
      QSplashScreen splash;
 
+     QString thisPath = QCoreApplication::applicationDirPath();
+     thisPath = thisPath.left(thisPath.length()-3);
+     chdir(thisPath.toStdString().c_str());
+     std::cout << QDir::currentPath().toStdString() << "\n";
      QStringList args = autoPi.arguments();
      bool use_fixed_size = (args.size() > 2);
      
      QSize size = autoPi.primaryScreen()->size();
      if (use_fixed_size)
          size = QSize(args.at(1).toInt(), args.at(2).toInt());
-     system("pwd");
-     //Launch input if necessary
-     //system("./lib/scripts/Input/input.sh &");
-          
-     //Launch OBD.py
-     //system("./lib/scripts/OBD/obd.sh &");
-     
+
      splash.setPixmap(QPixmap(":/splash.png").scaled(size, Qt::KeepAspectRatio));
      splash.show();
      autoPi.processEvents();

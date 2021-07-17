@@ -34,11 +34,9 @@ MainWindow::MainWindow() {
 	Frame *obdFrame = obdview->GetFrame();
 	obdWorker = new OBDWorker(obdFrame);
 	obdFrame->SetWorker(obdWorker);
-
+	std::cout << "Settings View\n";
 	settings = new View(this);
-	Frame *settingsFrame = settings->GetFrame();
-	settingsManager = new SettingsManager();
-	settingsFrame->SetWorker(settingsManager);
+
 
 	stack = new QStackedWidget(this);
 	rail = new QVBoxLayout();
@@ -68,9 +66,12 @@ MainWindow::MainWindow() {
 						pages->indexOf(page));
 				button->setVisible(enabled);
 			});
-
+	system("sleep 0.1");
+	std::cout << "Initializing:\n\tUI\n";
 	initUI();
+	std::cout << "\tShortcuts\n";
 	initShortcuts();
+	std::cout << "\tSettings\n";
 	initSettings();
 }
 
@@ -126,40 +127,76 @@ void MainWindow::initUI() {
 }
 
 void MainWindow::initSettings() {
-	Frame *settingsFrame = settings->GetFrame();
-	settingsManager->Add(new SettingCategory("General"));
-	settingsManager->Add(
-			new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
-					new BoolValue(true)));
-	settingsManager->Add(
-			new Setting("General", "Font", new StringValue("Arial")));
-	settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
+	try {
+		std::cout <<"\tGetting Frame\n";
+		Frame *settingsFrame = settings->GetFrame();
+		std::cout <<"\tNew Settings Manager\n";
+		settingsManager = new SettingsManager();
+		std::cout <<"\tSetting Worker. . .\n";
+		settingsFrame->SetWorker(settingsManager);
+		std::cout << "\tAdding General Settings. . .\n";
+		settingsManager->Add(new SettingCategory("General"));
+		settingsManager->Add(
+				new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
+						new BoolValue(true)));
+		settingsManager->Add(
+				new Setting("General", "Font", new StringValue("Arial")));
+		settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
+		std::cout << "\tAdding Startup Settings. . .\n";
+		settingsManager->Add(new SettingCategory("Startup"));
+		settingsManager->Add(
+				new Setting("Startup", "Startup", this, SLOT(startup(bool)),
+						new BoolValue(false)));
+		settingsManager->Add(
+				new Setting("Startup", "Flip", this, SLOT(flip(bool)),
+						new BoolValue(false)));
+		settingsManager->Add(
+				new Setting("Startup", "Joystick Control", this, SLOT(joystick(bool)),
+						new BoolValue(false)));
 
-	settingsManager->Add(new SettingCategory("Startup"));
-	settingsManager->Add(new SettingCategory("Open Auto"));
+		std::cout << "\tAdding Open Auto Settings. . .\n";
+		settingsManager->Add(new SettingCategory("Open Auto"));
 
-	StringOption *frameRates = new StringOption("30");
-	frameRates->AddOption("30");
-	frameRates->AddOption("60");
-	settingsManager->Add(new Setting("Open Auto", "Frame Rate", frameRates));
+		StringOption *frameRates = new StringOption("30");
+		frameRates->AddOption("30");
+		frameRates->AddOption("60");
+		settingsManager->Add(new Setting("Open Auto", "Frame Rate", frameRates));
 
-	StringOption *resolutions = new StringOption("480");
-	resolutions->AddOption("480");
-	resolutions->AddOption("720");
-	resolutions->AddOption("1080");
-	settingsManager->Add(
-			new Setting("Open Auto", "Resolution", config,
-					SLOT(setVideoResolution(std::string)), resolutions));
+		StringOption *resolutions = new StringOption("480");
+		resolutions->AddOption("480");
+		resolutions->AddOption("720");
+		resolutions->AddOption("1080");
+		settingsManager->Add(
+				new Setting("Open Auto", "Resolution", config,
+						SLOT(setVideoResolution(std::string)), resolutions));
 
-	settingsManager->Add(new Setting("Open Auto", "DPI", new IntValue(140)));
+		settingsManager->Add(new Setting("Open Auto", "DPI", new IntValue(140)));
 
-	settingsManager->Add(new SettingCategory("OBD"));
-	settingsManager->Add(new Setting("OBD", "OBD", new BoolValue(true)));
-	settingsManager->Add(new Setting("OBD", "OBD Address", new StringOption(getOBDOptions())));
+		std::cout << "\tAdding OBD Settings. . .\n";
+		settingsManager->Add(new SettingCategory("OBD"));
+		settingsManager->Add(
+				new Setting("OBD", "OBD", obdWorker, SLOT(endableOBD(bool)),
+						new BoolValue(false)));
+		settingsManager->Add(
+				new Setting("OBD", "OBD Address", obdWorker,
+						SLOT(setOBD(std::string)),
+						new StringOption(OBDWorker::getOBDOptions())));
+		std::cout<<"\tInitializing Settings. . .\n";
+		settingsManager->initialize(settingsFrame);
+		std::cout<<"\tLoading Settings. . .\n";
+		settingsManager->LoadSettings("AutoPi.csv");
+		std::cout<<"\tWriting Settings. . .\n";
+		settingsManager->WriteSettings("AutoPi.csv");
+	} catch (std::bad_alloc& e) {
+		std::cout << "Settings Manager Failed!\nRetrying...\n";
+		if (settingsManager != nullptr) {
+			delete settingsManager;
+			settingsManager=nullptr;
+		}
+		initSettings();
+	}
 
-	settingsManager->initialize(settingsFrame);
-	settingsManager->LoadSettings("AutoPi.csv");
-	settingsManager->WriteSettings("AutoPi.csv");
+	std::cout << "Settings Finished\n";
 
 }
 
