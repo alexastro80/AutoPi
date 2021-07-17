@@ -61,7 +61,9 @@ dependencies=(
 "libqt5serialbus5-plugins"
 "libqt5serialport5-dev"
 "libqt5websockets5-dev"
-
+"python-dbus"
+"python-gobject"
+"python-gobject-2"
 )
 installString="sudo apt install -y "
 
