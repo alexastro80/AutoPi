@@ -37,8 +37,9 @@ public slots:
 		if (enable != setStartup) {
 			if (enable) {
 				system("./lib/scripts/Startup/AddToStartup.sh &");
-			} else
-				system("./lib/scripts/Startup/RemoveFromStartup.sh &");
+			} else {
+				system("./lib/scripts/Startup/RemoveFromStartup.sh");
+			}
 			setStartup = enable;
 		}
 	}
@@ -57,7 +58,7 @@ public slots:
 			if (enable) {
 				system("./lib/scripts/Startup/enableJoystick.sh &");
 			} else
-				system("./lib/scripts/Startup/disableJoystick.sh &");
+				system("./lib/scripts/Startup/disableJoystick.sh");
 			setJoystick = enable;
 		}
 	}

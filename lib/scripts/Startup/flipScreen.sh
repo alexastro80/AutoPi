@@ -9,7 +9,7 @@ rotateVal=0
 sudo grep -l "display_rotate=*" /boot/config.txt | $lineNum
 if $lineNum != 0; then
     sudo grep "display_rotate=*" /boot/config.txt | $str
-    if "$str" =~ "^(*)=(*)" && rotateVal=$2; then
+    if "$str" =~ "^(*)=(*)"; then
         rotateVal=$($rotateVal | 0x2000)
     fi
     echo   "display_rotate found on line: $lineNum"
