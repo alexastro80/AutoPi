@@ -22,8 +22,13 @@ sudo cp -r -v $DIR/../../python-OBD/obd /usr/local/lib/python3.7/dist-packages/
 sudo ldconfig
 cd $DIR
 
+#Ensure Bluetooth Audio will work
+sudo apt -y purge "pulseaudio*"
+sudo sed -i "s/ExecStart=\/usr\/lib\/bluetooth\/bluetoothd$/ExecStart=\/usr\/lib\/bluetooth\/bluetoothd --noplugin=sap/" /lib/systemd/system/bluetooth.service
+
+
 dependencies=(
-"alsa-utils"
+"alsa*"
 "cmake"
 "libboost-all-dev"
 "libusb-1.0.0-dev"
@@ -40,6 +45,8 @@ dependencies=(
 "libqt5bluetooth5-bin"
 "qtconnectivity5-dev"
 "pulseaudio"
+"pulseaudio-utils"
+"pulseaudio-module-bluetooth"
 "librtaudio-dev"
 "librtaudio6"
 "libkf5bluezqt-dev"
@@ -65,19 +72,20 @@ dependencies=(
 "python-gobject"
 "python-gobject-2"
 )
-installString="sudo apt install -y "
+installString="sudo apt-get install -y "
 
 #create apt install string
 for i in ${dependencies[@]}; do
 	installString+=" $i"
 done
 sudo apt update
+echo $installString
 ${installString}
 
 sudo apt-get upgrade
     
 if [[ $? -eq 0 ]]; then
-      echo -e AutoPi make ok, executable can be found ../bin/dash
+      echo -e AutoPi make ok, executable can be found ../bin/AutoPi
       echo
 
       #check and add usb rules for openauto if they dont exist

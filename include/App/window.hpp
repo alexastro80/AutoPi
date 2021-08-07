@@ -62,7 +62,21 @@ public slots:
 			setJoystick = enable;
 		}
 	}
-
+	void setBlueAudio(std::string address) {
+		int start = address.find("{");
+		int end = address.find("}");
+		if (start >= 0 && end > 0) {
+			address = address.substr(start + 1, end - start - 2);
+			std::string cmd = "systemctl --user start pulseaudio";
+			system(cmd.c_str());
+			cmd = "bluetoothctl pair " + address;
+			system(cmd.c_str());
+			cmd = "bluetoothctl trust " + address;
+			system(cmd.c_str());
+			cmd = "bluetoothctl connect " + address;
+			system(cmd.c_str());
+		}
+	}
 
 protected:
 	void showEvent(QShowEvent *event);

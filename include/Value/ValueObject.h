@@ -28,10 +28,10 @@ public:
 	std::string Type() const override{
 		return typeid(value).name();
 	}
-	T Value() const {
+	virtual T Value() const {
 		return (valueRef != nullptr) ? *valueRef : value;
 	}
-	void Value(T val) {
+	virtual void Value(T val) {
 		(valueRef != nullptr) ? *valueRef = val : value = val;
 	}
 	virtual QWidget* Widget(QWidget *parent = nullptr) = 0;

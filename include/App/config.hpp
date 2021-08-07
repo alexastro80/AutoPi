@@ -130,6 +130,18 @@ public slots:
 					aasdk::proto::enums::VideoFPS_Enum__60);
 
 	}
+	void setAudioBackend(std::string backendType) {
+		if (backendType == "RTAUDIO")
+			openautoConfig->setAudioOutputBackendType(
+					openauto::configuration::AudioOutputBackendType::RTAUDIO);
+		else if (backendType == "QT")
+			openautoConfig->setAudioOutputBackendType(
+								openauto::configuration::AudioOutputBackendType::QT);
+
+	}
+	void setAudioOutput(bool enable) {
+		openautoConfig->setMusicAudioChannelEnabled(enable);
+	}
 
 private:
 	QMap<QString, QWidget*> quickViews;

@@ -43,17 +43,19 @@ public:
 		if (rightGauge != nullptr)
 			rightGauge->Paint(painter);
 	}
-//FIXME!!!!!!!!
+
 	static std::vector<std::string> getOBDOptions() {
-		std::ifstream file("lib/scripts/connectedBluetoothDevices.txt");
+		std::cout << "Getting Bluetooth options...\n";
+		system("./lib/scripts/getdevices.sh");
+		std::ifstream file("lib/scripts/bluetoothDevices.txt");
 		std::vector<std::string> options;
 		std::string line = "";
 		while (std::getline(file, line)) {
-			std::cout << line;
-			std::getline(file, line);
+			std::cout << "Address: " << line <<"\n";
 			options.push_back(line);
 		}
 		file.close();
+
 		return options;
 	}
 

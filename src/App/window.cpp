@@ -139,8 +139,11 @@ void MainWindow::initSettings() {
 		settingsManager->Add(
 				new Setting("General", "Theme Mode", theme, SLOT(Update(bool)),
 						new BoolValue(true)));
+		std::vector<std::string> blueDevices = OBDWorker::getOBDOptions();
 		settingsManager->Add(
-				new Setting("General", "Font", new StringValue("Arial")));
+						new Setting("General", "Bluetooth Audio Device", this,
+								SLOT(setBlueAudio(std::string)),
+								new StringOption(blueDevices)));
 		settingsManager->Add(new Setting("General", "Volume", new IntValue(20)));
 		std::cout << "\tAdding Startup Settings. . .\n";
 		settingsManager->Add(new SettingCategory("Startup"));
@@ -169,18 +172,22 @@ void MainWindow::initSettings() {
 		settingsManager->Add(
 				new Setting("Open Auto", "Resolution", config,
 						SLOT(setVideoResolution(std::string)), resolutions));
-
+		StringOption *audioBackends = new StringOption("QT");
+		audioBackends->AddOption("RTAUDIO");
+		audioBackends->AddOption("QT");
+		settingsManager->Add(new Setting("Open Auto", "Audio Backend", config, SLOT(setAudioBackend(std::string)), audioBackends));
+		settingsManager->Add(new Setting("Open Auto", "Audio", config, SLOT(setAudioOutput(bool)), new BoolValue(true)));
 		settingsManager->Add(new Setting("Open Auto", "DPI", new IntValue(140)));
 
 		std::cout << "\tAdding OBD Settings. . .\n";
 		settingsManager->Add(new SettingCategory("OBD"));
 		settingsManager->Add(
-				new Setting("OBD", "OBD", obdWorker, SLOT(endableOBD(bool)),
+				new Setting("OBD", "OBD", obdWorker, SLOT(enableOBD(bool)),
 						new BoolValue(false)));
 		settingsManager->Add(
 				new Setting("OBD", "OBD Address", obdWorker,
 						SLOT(setOBD(std::string)),
-						new StringOption(OBDWorker::getOBDOptions())));
+						new StringOption(blueDevices)));
 		std::cout<<"\tInitializing Settings. . .\n";
 		settingsManager->initialize(settingsFrame);
 		std::cout<<"\tLoading Settings. . .\n";
